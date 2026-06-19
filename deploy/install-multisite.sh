@@ -15,7 +15,7 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
-echo "==> Building and starting DB + app (port 127.0.0.1:3001)..."
+echo "==> Building and starting DB + app (port 127.0.0.1:3010)..."
 docker compose -f "$COMPOSE_FILE" --env-file "$ENV_FILE" up -d --build
 
 echo "==> Installing nginx site config for $DOMAIN..."
