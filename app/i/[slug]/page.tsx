@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPublishedInvitationBySlug, incrementViews } from "@/lib/server/invitations";
+import { getPublishedInvitationBySlug } from "@/lib/server/invitations";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
+import { InvitationViewCounter } from "@/components/InvitationViewCounter";
 import type { InvitationData } from "@/lib/validation/invitation-data";
 import type { ThemeDefaults } from "@/lib/validation/template";
 
@@ -64,9 +65,6 @@ export default async function InvitationPage({
   const { invitation, template } = result;
   const data = invitation.data as unknown as InvitationData;
 
-  // Fire-and-forget view counter (does not block render).
-  incrementViews(invitation.id);
-
   const names = `${pick(data, "groomName")} & ${pick(data, "brideName")}`;
   const jsonLd = {
     "@context": "https://schema.org",
@@ -83,6 +81,7 @@ export default async function InvitationPage({
 
   return (
     <>
+      <InvitationViewCounter slug={slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
