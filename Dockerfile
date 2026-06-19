@@ -4,7 +4,8 @@ FROM node:20-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
-RUN npm install --no-audit --no-fund
+# postinstall runs prisma generate — schema is copied later in builder stage
+RUN npm install --no-audit --no-fund --ignore-scripts
 
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
