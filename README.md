@@ -107,6 +107,23 @@ for fully automated order creation.
 5. Run `npx prisma db push` against the production DB, then register the
    Telegram webhook.
 
+## Deploy (Hetzner VPS)
+
+Self-hosted with Docker Compose (PostgreSQL + Nginx + SSL).
+
+See **[deploy/HETZNER.md](./deploy/HETZNER.md)** for the full guide.
+
+Quick start on the server:
+
+```bash
+git clone https://github.com/BoburBunyodjonov/online-invitation.git /opt/online-invitation
+cd /opt/online-invitation
+cp deploy/.env.production.example deploy/.env
+nano deploy/.env   # domain, passwords, AUTH_SECRET
+sed -i 's/YOUR_DOMAIN/your-domain.com/g' deploy/nginx/conf.d/default.conf
+RUN_SEED=true docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+```
+
 ## Project layout
 
 ```
