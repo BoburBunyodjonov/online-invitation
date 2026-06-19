@@ -24,8 +24,10 @@ function isLocalelessPath(pathname: string) {
 
 function invitationSlugFromPath(pathname: string): string | null {
   if (!pathname.startsWith("/i/")) return null;
-  const slug = pathname.slice(3).split("/")[0];
-  if (!slug || slug === "-" || slug.includes(".")) return null;
+  const segments = pathname.slice(3).split("/").filter(Boolean);
+  if (segments.length !== 1) return null;
+  const slug = segments[0];
+  if (!slug || slug.includes(".")) return null;
   return slug;
 }
 
