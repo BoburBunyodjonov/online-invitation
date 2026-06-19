@@ -23,7 +23,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs nextjs
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 --gid nodejs --home-dir /app nextjs
 
 # Standalone already includes traced node_modules — do not copy the full deps tree again.
 COPY --from=builder /app/.next/standalone ./
@@ -41,6 +42,8 @@ RUN npm install --no-save --no-audit --no-fund prisma@6.19.3 tsx@4.22.4 && \
     chown -R nextjs:nodejs /app /data
 
 USER nextjs
+ENV HOME=/app
+ENV PATH="/app/node_modules/.bin:${PATH}"
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
