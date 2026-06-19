@@ -1,5 +1,5 @@
 import createIntlMiddleware from "next-intl/middleware";
-import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -22,38 +22,8 @@ function isLocalelessPath(pathname: string) {
   return false;
 }
 
-function invitationSlugFromPath(pathname: string): string | null {
-  if (!pathname.startsWith("/i/")) return null;
-  const segments = pathname.slice(3).split("/").filter(Boolean);
-  if (segments.length !== 1) return null;
-  const slug = segments[0];
-  if (!slug || slug.includes(".")) return null;
-  return slug;
-}
-
-function shouldSkipViewCount(request: NextRequest): boolean {
-  if (request.method !== "GET") return true;
-  if (request.headers.get("purpose") === "prefetch") return true;
-  if (request.headers.get("x-middleware-prefetch")) return true;
-  return false;
-}
-
-function recordInvitationView(request: NextRequest, slug: string) {
-  const url = new URL(`/api/i/${encodeURIComponent(slug)}/view`, request.url);
-  return fetch(url, { method: "POST" }).catch((error) => {
-    console.error("[middleware] view increment failed", error);
-  });
-}
-
-export function middleware(request: NextRequest, event: NextFetchEvent) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  if (!shouldSkipViewCount(request)) {
-    const slug = invitationSlugFromPath(pathname);
-    if (slug) {
-      event.waitUntil(recordInvitationView(request, slug));
-    }
-  }
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const hasSession =
@@ -78,5 +48,5 @@ export function middleware(request: NextRequest, event: NextFetchEvent) {
 
 export const config = {
   // uz-cyrl must come before uz so `/uz-cyrl` is not parsed as locale `uz`
-  matcher: ["/", "/(ru|en|uz-cyrl|uz)/:path*", "/admin/:path*", "/i/:path*"],
+  matcher: ["/", "/(ru|en|uz-cyrl|uz)/:path*", "/admin/:path*"],
 };

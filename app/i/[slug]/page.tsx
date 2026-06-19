@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPublishedInvitationBySlug } from "@/lib/server/invitations";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
+import { InvitationViewCounter } from "@/components/InvitationViewCounter";
 import type { InvitationData } from "@/lib/validation/invitation-data";
 import type { ThemeDefaults } from "@/lib/validation/template";
 
@@ -80,6 +81,7 @@ export default async function InvitationPage({
 
   return (
     <>
+      <InvitationViewCounter slug={slug} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
