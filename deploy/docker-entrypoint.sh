@@ -16,7 +16,7 @@ prisma db push --skip-generate
 
 if [ "${RUN_SEED:-false}" = "true" ]; then
   echo "[entrypoint] Seeding database..."
-  if tsx prisma/seed.ts; then
+  if node prisma/seed.bundle.cjs; then
     echo "[entrypoint] Seed completed."
   else
     echo "[entrypoint] Seed failed — continuing (set RUN_SEED=false after first deploy)."

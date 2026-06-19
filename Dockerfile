@@ -16,6 +16,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Production Docker uses PostgreSQL; local dev keeps sqlite in the repo.
 RUN sed -i 's/provider = "sqlite"/provider = "postgresql"/' prisma/schema.prisma
 RUN npx prisma generate
+RUN npx esbuild prisma/seed.ts \
+  --bundle \
+  --platform=node \
+  --format=cjs \
+  --outfile=prisma/seed.bundle.cjs \
+  --packages=external
 RUN npm run build
 
 FROM node:20-bookworm-slim AS runner
@@ -35,8 +41,8 @@ COPY --from=builder /app/lib/generated ./lib/generated
 COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/lib/site-settings ./lib/site-settings
 COPY deploy/docker-entrypoint.sh /docker-entrypoint.sh
-# Entrypoint only: prisma db push + optional tsx seed (not bundled in standalone).
-RUN npm install --no-save --no-audit --no-fund prisma@6.19.3 tsx@4.22.4 && \
+# Entrypoint only: prisma db push (seed runs from prebuilt bundle).
+RUN npm install --no-save --no-audit --no-fund prisma@6.19.3 && \
     chmod +x /docker-entrypoint.sh && \
     mkdir -p /data/uploads && \
     chown -R nextjs:nodejs /app /data
