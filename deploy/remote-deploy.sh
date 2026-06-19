@@ -96,10 +96,22 @@ case "$ACTION" in
     if [ -n "$DEPLOY_URL" ]; then
       echo ""
       echo "==> Health check: $DEPLOY_URL"
-      if curl -fsI --max-time 15 "$DEPLOY_URL" | head -1; then
-        echo "✓ Site is up"
-      else
-        echo "⚠️  HTTP check failed (DNS or app may still be starting)"
+      ok=false
+      for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+        code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$DEPLOY_URL" || true)
+        if [ "$code" = "200" ] || [ "$code" = "307" ]; then
+          echo "HTTP/$code"
+          echo "✓ Site is up"
+          ok=true
+          break
+        fi
+        if [ "$i" -lt 12 ]; then
+          echo "  waiting… (HTTP ${code:-—}, attempt $i/12)"
+          sleep 10
+        fi
+      done
+      if [ "$ok" = false ]; then
+        echo "⚠️  Site not ready after 2 min — check: npm run deploy:logs"
       fi
     fi
     ;;
