@@ -41,10 +41,10 @@ The core trick: every customer's invitation is just a row in the DB served at
 npm install
 ```
 
-2. Configure env — copy `.env.example` to `.env` and fill in values:
+2. Configure env — copy `.env.development` to `.env` and fill in values:
 
 ```bash
-cp .env.example .env
+cp .env.development .env
 ```
 
 At minimum set `DATABASE_URL` (Neon) and `AUTH_SECRET` (`openssl rand -base64 32`).
@@ -101,7 +101,7 @@ for fully automated order creation.
 ## Deploy (Vercel)
 
 1. Push to GitHub, import into Vercel.
-2. Add all env vars from `.env.example`.
+2. Add all env vars from `.env.development`.
 3. Add a Neon Postgres + Vercel Blob store (both free tier).
 4. Build command is `prisma generate && next build` (already configured).
 5. Run `npx prisma db push` against the production DB, then register the
@@ -109,20 +109,31 @@ for fully automated order creation.
 
 ## Deploy (Hetzner VPS)
 
-Self-hosted with Docker Compose (PostgreSQL + Nginx + SSL).
+Docker (PostgreSQL + app) on the server; **Caddy** proxies HTTPS → `127.0.0.1:3010`.
 
-See **[deploy/HETZNER.md](./deploy/HETZNER.md)** for the full guide.
-
-Quick start on the server:
+**Server (one time):**
 
 ```bash
 git clone https://github.com/BoburBunyodjonov/online-invitation.git /opt/online-invitation
 cd /opt/online-invitation
-cp deploy/.env.production.example deploy/.env
-nano deploy/.env   # domain, passwords, AUTH_SECRET
-sed -i 's/YOUR_DOMAIN/your-domain.com/g' deploy/nginx/conf.d/default.conf
-RUN_SEED=true docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d --build
+cp deploy/.env.production deploy/.env
+nano deploy/.env
+RUN_SEED=true docker compose -f deploy/docker-compose.multisite.yml --env-file deploy/.env up -d --build
 ```
+
+After seed: `RUN_SEED=false` in `deploy/.env`.
+
+**From laptop:**
+
+```bash
+npm run deploy          # pull + rebuild
+npm run deploy:quick    # restart without rebuild
+npm run deploy:push     # git push + deploy
+npm run deploy:logs
+npm run deploy:status
+```
+
+Optional `deploy/deploy.local.env` for SSH key overrides.
 
 ## Project layout
 

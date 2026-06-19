@@ -11,7 +11,12 @@
     "db:push": "prisma db push && prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "deploy": "bash deploy/remote-deploy.sh",
+    "deploy:quick": "bash deploy/remote-deploy.sh --no-build",
+    "deploy:push": "bash deploy/remote-deploy.sh --push",
+    "deploy:logs": "bash deploy/remote-deploy.sh --logs",
+    "deploy:status": "bash deploy/remote-deploy.sh --status"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

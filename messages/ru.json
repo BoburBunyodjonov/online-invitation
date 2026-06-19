@@ -154,6 +154,8 @@
     "payment_WAIVED": "Бесплатно",
     "priceOnRequest": "По запросу",
     "colInvitation": "Приглашение",
+    "colViews": "Просмотры",
+    "viewsCount": "{count} просмотров",
     "invitationEditor": "Редактор приглашения",
     "deleteConfirm": "Удалить шаблон «{name}»?",
     "settings": "Настройки сайта",

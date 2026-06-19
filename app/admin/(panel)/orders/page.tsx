@@ -142,6 +142,20 @@ export default function OrdersPage() {
           <span>—</span>
         ),
     },
+    {
+      field: "views",
+      headerName: t("colViews"),
+      width: 100,
+      type: "number",
+      align: "right",
+      headerAlign: "right",
+      valueGetter: (_v, row) => row.invitation?.views ?? null,
+      renderCell: (params) => {
+        const views = params.row.invitation?.views;
+        if (views == null || !params.row.invitation?.isPublished) return "—";
+        return views.toLocaleString();
+      },
+    },
   ];
 
   return (

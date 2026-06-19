@@ -154,6 +154,8 @@
     "payment_WAIVED": "Bepul",
     "priceOnRequest": "Kelishilgan holda",
     "colInvitation": "Taklifnoma",
+    "colViews": "Ko‘rishlar",
+    "viewsCount": "{count} marta ko‘rilgan",
     "invitationEditor": "Taklifnoma tahriri",
     "deleteConfirm": "\"{name}\" shablonini o‘chirishni xohlaysizmi?",
     "settings": "Sayt sozlamalari",

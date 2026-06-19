@@ -154,6 +154,8 @@
     "payment_WAIVED": "Waived",
     "priceOnRequest": "On request",
     "colInvitation": "Invitation",
+    "colViews": "Views",
+    "viewsCount": "{count} views",
     "invitationEditor": "Invitation editor",
     "deleteConfirm": "Delete template \"{name}\"?",
     "settings": "Site settings",

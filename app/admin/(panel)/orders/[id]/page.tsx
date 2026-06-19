@@ -16,7 +16,7 @@ import {
   Breadcrumbs,
   alpha,
 } from "@mui/material";
-import { ArrowLeftIcon, UserIcon, PhoneIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, UserIcon, PhoneIcon, EyeIcon } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
 import { useOrder, useUpdateOrder } from "@/lib/queries/useOrders";
 import { ORDER_STATUSES } from "@/lib/validation/order";
@@ -127,6 +127,14 @@ export default function OrderDetailPage({
                   order.invitation.isPublished ? t("published") : t("draft")
                 }
                 color={order.invitation.isPublished ? "success" : "default"}
+              />
+            )}
+            {order.invitation?.isPublished && (
+              <Chip
+                icon={<EyeIcon weight="duotone" />}
+                label={t("viewsCount", { count: order.invitation.views })}
+                variant="outlined"
+                color="info"
               />
             )}
           </Stack>

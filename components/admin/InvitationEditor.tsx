@@ -16,6 +16,7 @@ import {
   Divider,
 } from "@mui/material";
 import { FloppyDiskIcon, RocketLaunchIcon, EyeIcon } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/config/locales";
 import type { OrderDTO } from "@/lib/types";
 import type { InvitationData } from "@/lib/validation/invitation-data";
@@ -36,6 +37,7 @@ function defaultData(): InvitationData {
 }
 
 export function InvitationEditor({ order }: { order: OrderDTO }) {
+  const t = useTranslations("admin");
   const existing = order.invitation ?? null;
   const [data, setData] = useState<InvitationData>(
     existing ? (existing.data as InvitationData) : defaultData(),
@@ -162,17 +164,23 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
         </Stack>
 
         {invitationId && slug && (
-          <Button
-            component="a"
-            href={`/i/${slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            size="small"
-            startIcon={<EyeIcon weight="duotone" />}
-            sx={{ mb: 2 }}
-          >
-            Open live page /i/{slug}
-          </Button>
+          <Stack direction="row" spacing={2} sx={{ mb: 2, alignItems: "center", flexWrap: "wrap" }}>
+            <Button
+              component="a"
+              href={`/i/${slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              size="small"
+              startIcon={<EyeIcon weight="duotone" />}
+            >
+              Open live page /i/{slug}
+            </Button>
+            {existing?.isPublished && (
+              <Typography variant="body2" color="text.secondary">
+                {t("viewsCount", { count: existing.views })}
+              </Typography>
+            )}
+          </Stack>
         )}
 
         <Divider sx={{ mb: 2 }} />

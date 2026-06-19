@@ -154,6 +154,8 @@
     "payment_WAIVED": "Бепул",
     "priceOnRequest": "Келишилган ҳолда",
     "colInvitation": "Таклифнома",
+    "colViews": "Кўришлар",
+    "viewsCount": "{count} марта кўрилган",
     "invitationEditor": "Таклифнома таҳрири",
     "deleteConfirm": "\"{name}\" шаблонини ўчиришни хоҳлайсизми?",
     "settings": "Сайт созламалари",
