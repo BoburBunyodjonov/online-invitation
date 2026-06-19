@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Taklifnoma — Wedding Invitation Platform
 
-## Getting Started
+A production-grade wedding invitation SaaS. Visitors browse ready-made
+invitation templates, order one via Telegram, and an admin customizes &
+publishes the final invitation page — all from a **single Next.js repo**,
+deployable for free on Vercel.
 
-First, run the development server:
+## Architecture
+
+One **Next.js (App Router)** project. The "backend" is **Next.js Route
+Handlers** (`app/api/**/route.ts`) running on the Node.js runtime — real
+backend code colocated with the frontend. Database access happens only in
+`lib/server/*` (called from Route Handlers and Server Components). One repo,
+one deployment, zero DevOps.
+
+The core trick: every customer's invitation is just a row in the DB served at
+`/i/[slug]` via ISR. No new Vercel project per customer → genuinely free hosting.
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router), TypeScript strict |
+| Styling | Tailwind v4 (layout) + MUI v9 (components) sharing one token file |
+| Design tokens | `config/design-tokens.ts` → feeds `lib/mui-theme.ts` + `app/globals.css` |
+| Icons | Phosphor (duotone) |
+| Client data | TanStack Query v5 (`lib/queries/*`) over a shared axios instance |
+| ORM / DB | Prisma + PostgreSQL (Neon free tier) |
+| File storage | Vercel Blob |
+| Auth (admin) | Auth.js (NextAuth v5), Credentials + bcrypt |
+| i18n | next-intl — `ru`, `en`, `uz`, `uz-Cyrl` (cookie-based) |
+| Telegram | grammy (webhook, no polling) |
+| Validation | zod (shared client + server) |
+| Forms | react-hook-form + zodResolver + a schema-driven dynamic form |
+
+## Getting started
+
+1. Install deps:
+
+```bash
+npm install
+```
+
+2. Configure env — copy `.env.example` to `.env` and fill in values:
+
+```bash
+cp .env.example .env
+```
+
+At minimum set `DATABASE_URL` (Neon) and `AUTH_SECRET` (`openssl rand -base64 32`).
+
+3. Create the schema and seed demo data (2 templates + an admin user):
+
+```bash
+npm run db:push
+npm run db:seed
+```
+
+Default admin: `admin@example.com` / `admin123` (override with
+`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`).
+
+4. Run dev:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Landing / gallery: http://localhost:3000
+- Template preview: http://localhost:3000/templates/beach-romantic/preview
+- Admin: http://localhost:3000/admin (login → orders / templates)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Telegram order flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Visitors tap **Order** on a template — this opens a DM to **@online_invitation_admin**
+(not a bot) with a pre-filled message naming the template.
 
-## Learn More
+1. Customer messages `@online_invitation_admin` on Telegram.
+2. Admin creates the order in the panel: **Orders → Create order** (or from the template card).
+3. Admin fills the invitation form and publishes — customer gets their `/i/[slug]` link.
 
-To learn more about Next.js, take a look at the following resources:
+Optional later: set up a Telegram **bot** via @BotFather (`TELEGRAM_BOT_TOKEN`, webhook)
+for fully automated order creation.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Order flow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Visitor previews a template, taps **Order** → Telegram bot.
+2. Bot creates an `Order` (status `NEW`) and pings the admin chat.
+3. Admin opens `/admin/orders/[id]`, fills the **schema-driven form** (auto-built
+   from the template's `fieldsSchema`) with a **live preview pane**, then publishes.
+4. Publishing sets the public slug and (optionally) DMs the customer their
+   `/i/[slug]` link.
 
-## Deploy on Vercel
+## Adding a template
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create a component under `templates/<key>/index.tsx` using the shared blocks
+   in `templates/shared/`.
+2. Register it in `templates/registry.ts`.
+3. In the admin Templates screen, create a DB template pointing at that
+   `componentKey`, with a `fieldsSchema` and `themeDefaults`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy (Vercel)
+
+1. Push to GitHub, import into Vercel.
+2. Add all env vars from `.env.example`.
+3. Add a Neon Postgres + Vercel Blob store (both free tier).
+4. Build command is `prisma generate && next build` (already configured).
+5. Run `npx prisma db push` against the production DB, then register the
+   Telegram webhook.
+
+## Project layout
+
+```
+app/            routes: (public) landing, i/[slug] live page, admin, api
+templates/      template components + shared blocks + registry
+lib/server/     business logic (db, auth, telegram, templates, orders, invitations)
+lib/queries/    TanStack Query hooks (axios)
+lib/validation/ zod schemas shared client + server
+config/         design tokens + locales
+messages/       next-intl translations
+prisma/         schema + seed
+```

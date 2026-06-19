@@ -1,0 +1,88 @@
+// Prisma schema for the wedding invitation platform.
+// DB: PostgreSQL (Neon free tier works natively with Vercel).
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Template {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  category      String // e.g. "beach", "classic", "islamic", "floral"
+  thumbnail     String // Blob URL
+  previewImages Json     // string[] — gallery images on landing card
+  componentKey  String // maps to a React component in templates/registry.ts
+  fieldsSchema  Json // zod-shaped JSON describing editable fields
+  themeDefaults Json // { backgroundColor, accentColor, fontPair, mode }
+  priceAmount   Int      @default(0) // major units: 350000 UZS, 49 USD, 175 EUR
+  currency      String   @default("UZS") // UZS | USD | EUR
+  isPublished   Boolean  @default(false)
+  badgeNew      Boolean  @default(false)
+  badgePopular  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  orders Order[]
+}
+
+model Order {
+  id               String        @id @default(cuid())
+  templateId       String
+  template         Template      @relation(fields: [templateId], references: [id])
+  telegramChatId   String
+  telegramUsername String?
+  contactPhone     String?
+  priceAmount      Int? // snapshot from template at order time
+  currency         String?
+  paymentStatus    PaymentStatus @default(UNPAID)
+  status           OrderStatus   @default(NEW)
+  invitation       Invitation?
+  createdAt        DateTime      @default(now())
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  WAIVED
+}
+
+enum OrderStatus {
+  NEW
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  slug        String   @unique // public URL: /i/[slug]
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id])
+  templateId  String
+  data        Json // filled values matching template.fieldsSchema, per locale
+  isPublished Boolean  @default(false)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  role         String @default("admin")
+}
+
+model SiteSettings {
+  id               String   @id @default("default")
+  contactPhone     String
+  telegramUsername String
+  texts            Json
+  updatedAt        DateTime @updatedAt
+}

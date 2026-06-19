@@ -1,0 +1,62 @@
+/* Plain CSS — not processed by Tailwind layers */
+.features-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  padding: 1.65rem 1.5rem;
+  border-radius: 1.25rem;
+  background: var(--color-paper);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 6%, transparent);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card);
+}
+
+.feature-card-icon {
+  width: 2.65rem;
+  height: 2.65rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--color-brand) 7%, var(--color-bg));
+  border: 1px solid color-mix(in srgb, var(--color-brand) 12%, transparent);
+  color: var(--color-brand);
+  margin-bottom: 1.1rem;
+}
+
+.feature-card-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--color-ink);
+  margin: 0 0 0.5rem;
+  line-height: 1.35;
+}
+
+.feature-card-text {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--color-ink-soft);
+  margin: 0;
+}

@@ -1,0 +1,17 @@
+"use server";
+
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
+import { LOCALE_COOKIE } from "@/i18n/constants";
+import { isLocale } from "@/config/locales";
+
+/** Persist the chosen platform UI locale to a cookie and refresh. */
+export async function setLocale(locale: string) {
+  if (!isLocale(locale)) return;
+  const store = await cookies();
+  store.set(LOCALE_COOKIE, locale, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+  });
+  revalidatePath("/", "layout");
+}

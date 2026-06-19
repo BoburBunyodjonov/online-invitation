@@ -1,0 +1,20 @@
+/**
+ * Admin live-preview frame: keep template UI inside the preview panel.
+ * blue-envelope uses position:fixed for intro/controls — that escapes the
+ * scroll container and covers the whole admin shell without these overrides.
+ */
+.invitation-preview-frame {
+  position: relative;
+  isolation: isolate;
+  contain: layout paint;
+}
+
+.invitation-preview-frame .blue-envelope-root .intro,
+.invitation-preview-frame .blue-envelope-root .language-switcher,
+.invitation-preview-frame .blue-envelope-root .music-toggle {
+  position: absolute !important;
+}
+
+.invitation-preview-frame .blue-envelope-root {
+  min-height: 100%;
+}
