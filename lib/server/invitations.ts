@@ -50,11 +50,13 @@ export async function getInvitationByOrderId(orderId: string) {
   return prisma.invitation.findUnique({ where: { orderId } });
 }
 
-/** Fire-and-forget view counter; never blocks page render. */
-export function incrementViews(id: string) {
-  prisma.invitation
-    .update({ where: { id }, data: { views: { increment: 1 } } })
-    .catch((e) => console.error("[invitations] view increment failed", e));
+/** Increments views for a published invitation slug. */
+export async function recordInvitationView(slug: string): Promise<void> {
+  const { invitation } = await getPublishedInvitationBySlug(slug);
+  await prisma.invitation.update({
+    where: { id: invitation.id },
+    data: { views: { increment: 1 } },
+  });
 }
 
 export async function createInvitation(input: InvitationCreate) {

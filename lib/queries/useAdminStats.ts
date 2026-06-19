@@ -9,5 +9,7 @@ export function useAdminStats() {
       const { data } = await api.get<AdminStats>("/admin/stats");
       return data;
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }

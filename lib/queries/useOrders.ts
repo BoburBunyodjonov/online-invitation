@@ -22,6 +22,8 @@ export function useOrders(status?: string) {
       });
       return data;
     },
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -33,6 +35,8 @@ export function useOrder(id: string) {
       return data;
     },
     enabled: Boolean(id),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 

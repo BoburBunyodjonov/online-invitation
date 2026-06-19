@@ -1,5 +1,5 @@
 import createIntlMiddleware from "next-intl/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -22,8 +22,36 @@ function isLocalelessPath(pathname: string) {
   return false;
 }
 
-export function middleware(request: NextRequest) {
+function invitationSlugFromPath(pathname: string): string | null {
+  if (!pathname.startsWith("/i/")) return null;
+  const slug = pathname.slice(3).split("/")[0];
+  if (!slug || slug === "-" || slug.includes(".")) return null;
+  return slug;
+}
+
+function shouldSkipViewCount(request: NextRequest): boolean {
+  if (request.method !== "GET") return true;
+  if (request.headers.get("purpose") === "prefetch") return true;
+  if (request.headers.get("x-middleware-prefetch")) return true;
+  return false;
+}
+
+function recordInvitationView(request: NextRequest, slug: string) {
+  const url = new URL(`/api/i/${encodeURIComponent(slug)}/view`, request.url);
+  return fetch(url, { method: "POST" }).catch((error) => {
+    console.error("[middleware] view increment failed", error);
+  });
+}
+
+export function middleware(request: NextRequest, event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
+
+  if (!shouldSkipViewCount(request)) {
+    const slug = invitationSlugFromPath(pathname);
+    if (slug) {
+      event.waitUntil(recordInvitationView(request, slug));
+    }
+  }
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const hasSession =
@@ -48,5 +76,5 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   // uz-cyrl must come before uz so `/uz-cyrl` is not parsed as locale `uz`
-  matcher: ["/", "/(ru|en|uz-cyrl|uz)/:path*", "/admin/:path*"],
+  matcher: ["/", "/(ru|en|uz-cyrl|uz)/:path*", "/admin/:path*", "/i/:path*"],
 };
