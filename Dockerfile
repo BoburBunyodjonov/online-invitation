@@ -25,17 +25,20 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs nextjs
 
+# Standalone already includes traced node_modules — do not copy the full deps tree again.
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/lib/generated ./lib/generated
 COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/lib/site-settings ./lib/site-settings
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY deploy/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh && mkdir -p /data/uploads && chown -R nextjs:nodejs /data /app/lib /app/templates
+# Entrypoint only: prisma db push + optional tsx seed (not bundled in standalone).
+RUN npm install --no-save --no-audit --no-fund prisma@6.19.3 tsx@4.22.4 && \
+    chmod +x /docker-entrypoint.sh && \
+    mkdir -p /data/uploads && \
+    chown -R nextjs:nodejs /app /data
 
 USER nextjs
 EXPOSE 3000
