@@ -31,6 +31,15 @@ export async function getTemplateById(id: string) {
   return template;
 }
 
+/** Increments views for a template preview page (/templates/[slug]/preview). */
+export async function recordTemplatePreviewView(slug: string): Promise<void> {
+  const template = await getTemplateBySlug(slug);
+  await prisma.template.update({
+    where: { id: template.id },
+    data: { views: { increment: 1 } },
+  });
+}
+
 export async function createTemplate(input: TemplateInput) {
   const { previewImages, fieldsSchema, themeDefaults, ...rest } = input;
   return prisma.template.create({

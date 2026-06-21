@@ -26,6 +26,7 @@ model Template {
   isPublished   Boolean  @default(false)
   badgeNew      Boolean  @default(false)
   badgePopular  Boolean  @default(false)
+  views         Int      @default(0) // landing /templates/[slug]/preview visits
   createdAt     DateTime @default(now())
 
   orders Order[]

@@ -44,7 +44,7 @@ export async function getAdminStats(): Promise<AdminStats> {
       select: { isPublished: true, views: true },
     }),
     prisma.template.findMany({
-      select: { isPublished: true },
+      select: { isPublished: true, views: true },
     }),
     prisma.order.groupBy({
       by: ["templateId"],
@@ -65,6 +65,9 @@ export async function getAdminStats(): Promise<AdminStats> {
 
   const paidOrders = orders.filter((o) => o.paymentStatus === "PAID");
 
+  const invitationViews = invitations.reduce((sum, i) => sum + i.views, 0);
+  const templatePreviewViews = templates.reduce((sum, t) => sum + t.views, 0);
+
   return {
     orders: {
       total: orders.length,
@@ -78,7 +81,7 @@ export async function getAdminStats(): Promise<AdminStats> {
     invitations: {
       total: invitations.length,
       published: invitations.filter((i) => i.isPublished).length,
-      totalViews: invitations.reduce((sum, i) => sum + i.views, 0),
+      totalViews: invitationViews + templatePreviewViews,
     },
     templates: {
       total: templates.length,

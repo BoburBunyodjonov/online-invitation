@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPublishedInvitationBySlug } from "@/lib/server/invitations";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
+import { ViewBeacon } from "@/components/ViewBeacon";
 import type { InvitationData } from "@/lib/validation/invitation-data";
 import type { ThemeDefaults } from "@/lib/validation/template";
 
@@ -80,21 +81,7 @@ export default async function InvitationPage({
 
   return (
     <>
-      {/* Beacon: runs on every browser visit, even when the page HTML is ISR-cached. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`/api/i/${encodeURIComponent(slug)}/view`}
-        alt=""
-        width={1}
-        height={1}
-        style={{
-          position: "absolute",
-          width: 1,
-          height: 1,
-          opacity: 0,
-          pointerEvents: "none",
-        }}
-      />
+      <ViewBeacon src={`/api/i/${encodeURIComponent(slug)}/view`} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

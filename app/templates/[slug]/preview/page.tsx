@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getTemplateBySlug } from "@/lib/server/templates";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
+import { ViewBeacon } from "@/components/ViewBeacon";
 import { SAMPLE_DATA, BLUE_ENVELOPE_SAMPLE } from "@/templates/sample-data";
 import type { ThemeDefaults } from "@/lib/validation/template";
 
@@ -45,10 +46,13 @@ export default async function TemplatePreviewPage({
     template.componentKey === "blue-envelope" ? BLUE_ENVELOPE_SAMPLE : SAMPLE_DATA;
 
   return (
-    <InvitationRenderer
-      componentKey={template.componentKey}
-      data={previewData}
-      theme={template.themeDefaults as ThemeDefaults}
-    />
+    <>
+      <ViewBeacon src={`/api/templates/${encodeURIComponent(slug)}/view`} />
+      <InvitationRenderer
+        componentKey={template.componentKey}
+        data={previewData}
+        theme={template.themeDefaults as ThemeDefaults}
+      />
+    </>
   );
 }
