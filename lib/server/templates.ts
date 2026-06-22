@@ -2,6 +2,15 @@ import { prisma } from "./db";
 import { notFound } from "./api-error";
 import type { TemplateInput, TemplateUpdate } from "@/lib/validation/template";
 import type { Prisma } from "@/lib/generated/prisma";
+import {
+  getViewRequestContext,
+  shouldCountView,
+} from "./view-tracking";
+import {
+  clientIp,
+  rateLimit,
+  tooManyRequests,
+} from "./rate-limit";
 
 /**
  * Framework-agnostic template business logic. Called from API Route Handlers
@@ -25,19 +34,43 @@ export async function getTemplateBySlug(slug: string) {
   return template;
 }
 
+/** Public preview — only published templates. */
+export async function getPublishedTemplateBySlug(slug: string) {
+  const template = await prisma.template.findFirst({
+    where: { slug, isPublished: true },
+  });
+  if (!template) throw notFound("Template not found");
+  return template;
+}
+
 export async function getTemplateById(id: string) {
   const template = await prisma.template.findUnique({ where: { id } });
   if (!template) throw notFound("Template not found");
   return template;
 }
 
-/** Increments views for a template preview page (/templates/[slug]/preview). */
-export async function recordTemplatePreviewView(slug: string): Promise<void> {
-  const template = await getTemplateBySlug(slug);
+/** Increments views for a published template preview page. */
+export async function recordTemplatePreviewView(
+  slug: string,
+  req?: Request,
+): Promise<{ counted: boolean }> {
+  if (req) {
+    const ip = clientIp(req);
+    const rl = rateLimit(`view:template:${ip}`, 120, 60_000);
+    if (!rl.allowed) throw tooManyRequests(rl.retryAfterSec);
+
+    const ctx = getViewRequestContext(req);
+    if (!shouldCountView(ctx, "template", slug)) {
+      return { counted: false };
+    }
+  }
+
+  const template = await getPublishedTemplateBySlug(slug);
   await prisma.template.update({
     where: { id: template.id },
     data: { views: { increment: 1 } },
   });
+  return { counted: true };
 }
 
 export async function createTemplate(input: TemplateInput) {

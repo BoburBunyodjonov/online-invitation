@@ -47,6 +47,7 @@ export const invitationDataSchema = z.object({
   gallery: z.array(z.string()).default([]),
   backgroundMusic: z.string().optional(),
   unlockGate: z.boolean().default(true),
+  rsvpEnabled: z.boolean().default(true),
 });
 
 export type LocalizedString = z.infer<typeof localizedStringSchema>;

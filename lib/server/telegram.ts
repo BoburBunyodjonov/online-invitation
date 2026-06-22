@@ -62,6 +62,15 @@ export function getBot(): Bot {
       return;
     }
 
+    if (payload === "order") {
+      await ctx.reply(
+        "Assalomu alaykum! 🌸\n\nTaklifnoma shablonini tanlash uchun saytimizdagi katalogga o‘ting. " +
+          "Yoqtirgan shabloningizdagi «Buyurtma» tugmasini bosing — buyurtma avtomatik yaratiladi.\n\n" +
+          siteUrl,
+      );
+      return;
+    }
+
     await ctx.reply(
       "Assalomu alaykum! 🌸\n\nTaklifnoma shablonini tanlash uchun saytimizga tashrif buyuring:\n" +
         siteUrl,

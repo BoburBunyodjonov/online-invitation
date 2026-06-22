@@ -3,7 +3,7 @@
 A production-grade wedding invitation SaaS. Visitors browse ready-made
 invitation templates, order one via Telegram, and an admin customizes &
 publishes the final invitation page — all from a **single Next.js repo**,
-deployable for free on Vercel.
+deployable on Vercel or Docker (Hetzner VPS).
 
 ## Architecture
 
@@ -25,7 +25,7 @@ The core trick: every customer's invitation is just a row in the DB served at
 | Design tokens | `config/design-tokens.ts` → feeds `lib/mui-theme.ts` + `app/globals.css` |
 | Icons | Phosphor (duotone) |
 | Client data | TanStack Query v5 (`lib/queries/*`) over a shared axios instance |
-| ORM / DB | Prisma + PostgreSQL (Neon free tier) |
+| ORM / DB | Prisma + **PostgreSQL** (local Docker, Neon, or Docker prod) |
 | File storage | Vercel Blob |
 | Auth (admin) | Auth.js (NextAuth v5), Credentials + bcrypt |
 | i18n | next-intl — `ru`, `en`, `uz`, `uz-Cyrl` (cookie-based) |
@@ -47,13 +47,14 @@ npm install
 cp .env.development .env
 ```
 
-At minimum set `DATABASE_URL` (Neon) and `AUTH_SECRET` (`openssl rand -base64 32`).
+At minimum set `AUTH_SECRET` (`openssl rand -base64 32`).
 
-3. Create the schema and seed demo data (2 templates + an admin user):
+3. Start PostgreSQL and apply migrations:
 
 ```bash
-npm run db:push
-npm run db:seed
+npm run db:up          # Docker Postgres on localhost:5432
+npm run db:migrate     # apply prisma/migrations
+npm run db:seed        # 3 templates + admin user
 ```
 
 Default admin: `admin@example.com` / `admin123` (override with
@@ -69,26 +70,56 @@ npm run dev
 - Template preview: http://localhost:3000/templates/beach-romantic/preview
 - Admin: http://localhost:3000/admin (login → orders / templates)
 
+## Database
+
+**PostgreSQL everywhere** — same provider in dev, CI, Vercel (Neon), and Docker prod.
+
+| Command | Purpose |
+|---|---|
+| `npm run db:up` | Start local Postgres (Docker) |
+| `npm run db:down` | Stop local Postgres |
+| `npm run db:migrate` | Create/apply migrations (dev) |
+| `npm run db:migrate:deploy` | Apply migrations (prod/CI) |
+| `npm run db:seed` | Seed demo data |
+
+**Existing production DB** (previously on `db push`): after pulling, run once:
+
+```bash
+npx prisma migrate resolve --applied 20250621000000_init
+npx prisma migrate deploy
+```
+
+## Tests & CI
+
+```bash
+npm run test       # unit tests (node:test + tsx)
+npm run typecheck  # tsc --noEmit
+npm run lint
+```
+
+GitHub Actions runs lint, typecheck, test, and build on every push/PR.
+
 ## Telegram order flow
 
-Visitors tap **Order** on a template — this opens a DM to **@online_invitation_admin**
-(not a bot) with a pre-filled message naming the template.
+When `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` is set, **Order** buttons open the bot
+(`t.me/Bot?start=tpl_<slug>`) and create an order automatically. Without it, visitors
+DM **@online_invitation_admin** with a pre-filled message (fallback).
 
-1. Customer messages `@online_invitation_admin` on Telegram.
-2. Admin creates the order in the panel: **Orders → Create order** (or from the template card).
-3. Admin fills the invitation form and publishes — customer gets their `/i/[slug]` link.
+1. Customer taps **Order** on a template → Telegram bot creates `Order` (status `NEW`).
+2. Bot asks for phone (optional) and notifies admin.
+3. Admin opens `/admin/orders/[id]`, fills the invitation form, publishes.
+4. Customer receives `/i/[slug]` link via Telegram.
 
-Optional later: set up a Telegram **bot** via @BotFather (`TELEGRAM_BOT_TOKEN`, webhook)
-for fully automated order creation.
+Set `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID`, and register the webhook.
 
-## Order flow
+## RSVP
 
-1. Visitor previews a template, taps **Order** → Telegram bot.
-2. Bot creates an `Order` (status `NEW`) and pings the admin chat.
-3. Admin opens `/admin/orders/[id]`, fills the **schema-driven form** (auto-built
-   from the template's `fieldsSchema`) with a **live preview pane**, then publishes.
-4. Publishing sets the public slug and (optionally) DMs the customer their
-   `/i/[slug]` link.
+Published invitations show an RSVP form at the bottom of `/i/[slug]`.
+Guests can confirm attendance, decline, or mark "not sure".
+
+- Admin sees responses on the order detail page (after publish).
+- Export guest list as CSV from the admin panel.
+- Disable per invitation via `rsvpEnabled: false` in invitation data.
 
 ## Adding a template
 
@@ -104,7 +135,7 @@ for fully automated order creation.
 2. Add all env vars from `.env.development`.
 3. Add a Neon Postgres + Vercel Blob store (both free tier).
 4. Build command is `prisma generate && next build` (already configured).
-5. Run `npx prisma db push` against the production DB, then register the
+5. Run `npm run db:migrate:deploy` against the production DB, then register the
    Telegram webhook.
 
 ## Deploy (Hetzner VPS)
@@ -145,5 +176,5 @@ lib/queries/    TanStack Query hooks (axios)
 lib/validation/ zod schemas shared client + server
 config/         design tokens + locales
 messages/       next-intl translations
-prisma/         schema + seed
+prisma/         schema + migrations + seed
 ```

@@ -1,13 +1,17 @@
 type ErrorContext = Record<string, unknown>;
 
-function serializeError(error: unknown): { message: string; stack?: string } {
+function serializeError(error: unknown): {
+  message: string;
+  stack?: string;
+  name?: string;
+} {
   if (error instanceof Error) {
-    return { message: error.message, stack: error.stack };
+    return { message: error.message, stack: error.stack, name: error.name };
   }
   return { message: String(error) };
 }
 
-/** Best-effort error reporting — optional Sentry DSN or webhook. Never throws. */
+/** Best-effort error reporting — webhook in production. Never throws. */
 export async function reportError(
   error: unknown,
   context?: ErrorContext,
@@ -15,7 +19,8 @@ export async function reportError(
   const payload = {
     ...serializeError(error),
     context,
-    url: typeof window !== "undefined" ? window.location.href : undefined,
+    environment: process.env.NODE_ENV,
+    runtime: process.env.NEXT_RUNTIME,
     timestamp: new Date().toISOString(),
   };
 
@@ -31,6 +36,7 @@ export async function reportError(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(5000),
       });
     } catch (e) {
       console.error("[monitoring] webhook failed", e);

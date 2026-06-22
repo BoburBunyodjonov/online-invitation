@@ -21,13 +21,12 @@ export default async function OgImage({
   let background = "#fbf7f2";
 
   try {
-    const { invitation, template } = await getPublishedInvitationBySlug(slug);
+    const { invitation, theme } = await getPublishedInvitationBySlug(slug);
     const data = invitation.data as unknown as InvitationData;
     const groom = data.groomName[data.defaultLocale] ?? "";
     const bride = data.brideName[data.defaultLocale] ?? "";
     names = `${groom} & ${bride}`;
     dateLabel = data.weddingDate;
-    const theme = template.themeDefaults as { accentColor?: string; backgroundColor?: string };
     accent = theme.accentColor ?? accent;
     background = theme.backgroundColor ?? background;
   } catch {

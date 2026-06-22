@@ -4,6 +4,7 @@ import type { ThemeDefaults } from "@/lib/validation/template";
 import BeachRomanticTemplate from "./beach-romantic";
 import IslamicElegantTemplate from "./islamic-elegant";
 import BlueEnvelopeTemplate from "./blue-envelope";
+import UzbStyleTemplate from "./uzb-style";
 
 export interface TemplateComponentProps {
   data: InvitationData;
@@ -22,6 +23,7 @@ export const TEMPLATE_REGISTRY: Record<
   "beach-romantic": BeachRomanticTemplate,
   "islamic-elegant": IslamicElegantTemplate,
   "blue-envelope": BlueEnvelopeTemplate,
+  "uzb-style": UzbStyleTemplate,
 };
 
 export const REGISTRY_KEYS = Object.keys(TEMPLATE_REGISTRY);

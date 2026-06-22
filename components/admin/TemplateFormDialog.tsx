@@ -18,6 +18,7 @@ import { REGISTRY_KEYS } from "@/templates/registry";
 import {
   DEFAULT_FIELDS_SCHEMA,
   BEACH_THEME,
+  getFieldsSchemaForComponent,
 } from "@/templates/sample-data";
 import type { TemplateDTO } from "@/lib/types";
 import { CURRENCIES } from "@/lib/format-price";
@@ -140,7 +141,15 @@ export function TemplateFormDialog({
               label="Component"
               select
               value={componentKey}
-              onChange={(e) => setComponentKey(e.target.value)}
+              onChange={(e) => {
+                const key = e.target.value;
+                setComponentKey(key);
+                if (!isEdit) {
+                  setFieldsSchemaText(
+                    JSON.stringify(getFieldsSchemaForComponent(key), null, 2),
+                  );
+                }
+              }}
               fullWidth
             >
               {REGISTRY_KEYS.map((k) => (

@@ -13,8 +13,6 @@ RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-# Production Docker uses PostgreSQL; local dev keeps sqlite in the repo.
-RUN sed -i 's/provider = "sqlite"/provider = "postgresql"/' prisma/schema.prisma
 RUN npx prisma generate
 RUN npx esbuild prisma/seed.ts \
   --bundle \
@@ -41,7 +39,7 @@ COPY --from=builder /app/lib/generated ./lib/generated
 COPY --from=builder /app/templates ./templates
 COPY --from=builder /app/lib/site-settings ./lib/site-settings
 COPY deploy/docker-entrypoint.sh /docker-entrypoint.sh
-# Entrypoint only: prisma db push (seed runs from prebuilt bundle).
+# Entrypoint: prisma migrate deploy (seed runs from prebuilt bundle).
 RUN npm install --no-save --no-audit --no-fund prisma@6.19.3 && \
     chmod +x /docker-entrypoint.sh && \
     mkdir -p /data/uploads && \

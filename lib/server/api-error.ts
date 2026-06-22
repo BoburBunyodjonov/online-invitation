@@ -44,7 +44,7 @@ export function handleApiError(error: unknown): NextResponse {
     return NextResponse.json(
       {
         error:
-          "Database schema mismatch. Run `npm run db:push` and restart the dev server.",
+          "Database schema mismatch. Run `npm run db:migrate` and restart the dev server.",
         details: error.message,
       },
       { status: 500 },

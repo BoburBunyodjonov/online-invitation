@@ -1,15 +1,10 @@
-"use client";
-
 import {
   Box,
   Card,
   CardContent,
   Grid,
-  Skeleton,
   Stack,
   Typography,
-  Alert,
-  Button,
   alpha,
 } from "@mui/material";
 import {
@@ -18,9 +13,9 @@ import {
   SquaresFourIcon,
   CurrencyCircleDollarIcon,
   TrendUpIcon,
-} from "@phosphor-icons/react";
-import { useTranslations } from "next-intl";
-import { useAdminStats } from "@/lib/queries/useAdminStats";
+} from "@phosphor-icons/react/dist/ssr";
+import { getTranslations } from "next-intl/server";
+import type { AdminStats } from "@/lib/server/stats";
 import { formatTemplatePrice } from "@/lib/format-price";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
@@ -73,40 +68,8 @@ function StatCard({
   );
 }
 
-export function AdminDashboard() {
-  const t = useTranslations("admin");
-  const { data, isPending, isError, refetch } = useAdminStats();
-
-  if (isPending) {
-    return (
-      <Stack spacing={2}>
-        <Skeleton variant="rounded" height={80} />
-        <Grid container spacing={2}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }}>
-              <Skeleton variant="rounded" height={110} />
-            </Grid>
-          ))}
-        </Grid>
-      </Stack>
-    );
-  }
-
-  if (isError || !data) {
-    return (
-      <Alert
-        severity="error"
-        sx={{ borderRadius: 3 }}
-        action={
-          <Button color="inherit" size="small" onClick={() => refetch()}>
-            {t("retry")}
-          </Button>
-        }
-      >
-        {t("loadError")}
-      </Alert>
-    );
-  }
+export async function AdminDashboard({ stats }: { stats: AdminStats }) {
+  const t = await getTranslations("admin");
 
   return (
     <Stack spacing={3}>
@@ -119,14 +82,14 @@ export function AdminDashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statOrdersTotal")}
-            value={data.orders.total}
+            value={stats.orders.total}
             icon={TicketIcon}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statOrdersNew")}
-            value={data.orders.new}
+            value={stats.orders.new}
             icon={TrendUpIcon}
             color="warning"
           />
@@ -134,7 +97,7 @@ export function AdminDashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statOrdersDone")}
-            value={data.orders.done}
+            value={stats.orders.done}
             icon={TicketIcon}
             color="success"
           />
@@ -142,7 +105,7 @@ export function AdminDashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statInvitationsPublished")}
-            value={data.invitations.published}
+            value={stats.invitations.published}
             icon={SquaresFourIcon}
             color="info"
           />
@@ -150,35 +113,36 @@ export function AdminDashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statTotalViews")}
-            value={data.invitations.totalViews}
+            value={stats.invitations.totalViews}
             icon={EyeIcon}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard
             label={t("statPaidRevenue")}
-            value={formatTemplatePrice(data.revenue.paidAmountUzs, "UZS")}
+            value={formatTemplatePrice(stats.revenue.paidAmountUzs, "UZS")}
             icon={CurrencyCircleDollarIcon}
             color="success"
           />
         </Grid>
       </Grid>
 
-      {data.topTemplates.length > 0 && (
+      {stats.topTemplates.length > 0 && (
         <Card sx={{ borderRadius: 3 }}>
           <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
               {t("statTopTemplates")}
             </Typography>
             <Stack spacing={1.5}>
-              {data.topTemplates.map((row, i) => (
+              {stats.topTemplates.map((row, i) => (
                 <Stack
                   key={row.templateId}
                   direction="row"
                   sx={{
                     justifyContent: "space-between",
                     py: 1,
-                    borderBottom: i < data.topTemplates.length - 1 ? "1px solid" : "none",
+                    borderBottom:
+                      i < stats.topTemplates.length - 1 ? "1px solid" : "none",
                     borderColor: "divider",
                   }}
                 >

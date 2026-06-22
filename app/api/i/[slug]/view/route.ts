@@ -1,31 +1,46 @@
 import { NextResponse } from "next/server";
 import { recordInvitationView } from "@/lib/server/invitations";
 import { handleApiError } from "@/lib/server/api-error";
+import {
+  attachViewDedupCookie,
+} from "@/lib/server/view-tracking";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type RouteCtx = { params: Promise<{ slug: string }> };
 
-async function countView(ctx: RouteCtx) {
+async function countView(req: Request, ctx: RouteCtx) {
   const { slug } = await ctx.params;
-  await recordInvitationView(slug);
+  return recordInvitationView(slug, req);
 }
 
-export async function GET(_req: Request, ctx: RouteCtx) {
+export async function GET(req: Request, ctx: RouteCtx) {
   try {
-    await countView(ctx);
-    return new NextResponse(null, { status: 204 });
+    const { counted } = await countView(req, ctx);
+    const res = new NextResponse(null, { status: 204 });
+    if (counted) {
+      const { slug } = await ctx.params;
+      attachViewDedupCookie(res, "invitation", slug);
+    }
+    return res;
   } catch (error) {
+    if (error instanceof Response) return error;
     return handleApiError(error);
   }
 }
 
-export async function POST(_req: Request, ctx: RouteCtx) {
+export async function POST(req: Request, ctx: RouteCtx) {
   try {
-    await countView(ctx);
-    return NextResponse.json({ ok: true });
+    const { counted } = await countView(req, ctx);
+    const res = NextResponse.json({ ok: true, counted });
+    if (counted) {
+      const { slug } = await ctx.params;
+      attachViewDedupCookie(res, "invitation", slug);
+    }
+    return res;
   } catch (error) {
+    if (error instanceof Response) return error;
     return handleApiError(error);
   }
 }

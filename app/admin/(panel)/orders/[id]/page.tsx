@@ -22,6 +22,7 @@ import { useOrder, useUpdateOrder } from "@/lib/queries/useOrders";
 import { ORDER_STATUSES } from "@/lib/validation/order";
 import { PAYMENT_STATUSES, formatTemplatePrice, type CurrencyCode } from "@/lib/format-price";
 import { InvitationEditor } from "@/components/admin/InvitationEditor";
+import { AdminRsvpPanel } from "@/components/admin/AdminRsvpPanel";
 
 export default function OrderDetailPage({
   params,
@@ -187,6 +188,9 @@ export default function OrderDetailPage({
         {t("invitationEditor")}
       </Typography>
       <InvitationEditor order={order} />
+      {order.invitation?.isPublished && (
+        <AdminRsvpPanel invitationId={order.invitation.id} />
+      )}
     </Box>
   );
 }

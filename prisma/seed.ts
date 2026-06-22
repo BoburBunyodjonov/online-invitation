@@ -3,9 +3,13 @@ import bcrypt from "bcryptjs";
 import {
   SAMPLE_DATA,
   DEFAULT_FIELDS_SCHEMA,
+  STANDARD_FIELDS_SCHEMA,
+  BLUE_ENVELOPE_FIELDS_SCHEMA,
+  UZB_STYLE_FIELDS_SCHEMA,
   BEACH_THEME,
   ISLAMIC_THEME,
   BLUE_ENVELOPE_THEME,
+  UZB_STYLE_THEME,
 } from "../templates/sample-data";
 import {
   DEFAULT_LANDING_TEXTS,
@@ -45,7 +49,7 @@ async function main() {
         "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=85",
       previewImages: SAMPLE_DATA.gallery,
       componentKey: "beach-romantic",
-      fieldsSchema: DEFAULT_FIELDS_SCHEMA as object,
+      fieldsSchema: STANDARD_FIELDS_SCHEMA as object,
       themeDefaults: BEACH_THEME as object,
       priceAmount: 250_000,
       currency: "UZS",
@@ -70,7 +74,7 @@ async function main() {
         "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=85",
       previewImages: SAMPLE_DATA.gallery,
       componentKey: "islamic-elegant",
-      fieldsSchema: DEFAULT_FIELDS_SCHEMA as object,
+      fieldsSchema: STANDARD_FIELDS_SCHEMA as object,
       themeDefaults: ISLAMIC_THEME as object,
       priceAmount: 300_000,
       currency: "UZS",
@@ -82,6 +86,7 @@ async function main() {
     where: { slug: "blue-envelope" },
     update: {
       componentKey: "blue-envelope",
+      fieldsSchema: BLUE_ENVELOPE_FIELDS_SCHEMA as object,
       isPublished: true,
       priceAmount: 450_000,
       currency: "UZS",
@@ -97,7 +102,7 @@ async function main() {
         "/templates/blue-envelope/assets/rings%20blue.png",
       ],
       componentKey: "blue-envelope",
-      fieldsSchema: DEFAULT_FIELDS_SCHEMA as object,
+      fieldsSchema: BLUE_ENVELOPE_FIELDS_SCHEMA as object,
       themeDefaults: BLUE_ENVELOPE_THEME as object,
       priceAmount: 450_000,
       currency: "UZS",
@@ -105,7 +110,36 @@ async function main() {
       badgeNew: true,
     },
   });
-  console.log("✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope");
+  console.log("✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope, uzb-style");
+
+  await prisma.template.upsert({
+    where: { slug: "uzb-style" },
+    update: {
+      componentKey: "uzb-style",
+      fieldsSchema: UZB_STYLE_FIELDS_SCHEMA as object,
+      isPublished: true,
+      priceAmount: 500_000,
+      currency: "UZS",
+      badgeNew: true,
+    },
+    create: {
+      slug: "uzb-style",
+      name: "Uzbek Heritage",
+      category: "classic",
+      thumbnail: "/templates/uzb-style/assets/couple.png",
+      previewImages: [
+        "/templates/uzb-style/assets/couple.png",
+        "/templates/uzb-style/assets/border%20ornament.png",
+      ],
+      componentKey: "uzb-style",
+      fieldsSchema: UZB_STYLE_FIELDS_SCHEMA as object,
+      themeDefaults: UZB_STYLE_THEME as object,
+      priceAmount: 500_000,
+      currency: "UZS",
+      isPublished: true,
+      badgeNew: true,
+    },
+  });
 
   await prisma.siteSettings.upsert({
     where: { id: "default" },

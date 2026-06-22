@@ -21,7 +21,7 @@ import { LOCALES, LOCALE_LABELS, type Locale } from "@/config/locales";
 import type { OrderDTO } from "@/lib/types";
 import type { InvitationData } from "@/lib/validation/invitation-data";
 import { invitationDataSchema } from "@/lib/validation/invitation-data";
-import { SAMPLE_DATA } from "@/templates/sample-data";
+import { getSampleDataForComponent } from "@/templates/sample-data";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
 import { SchemaForm } from "./SchemaForm";
 import {
@@ -31,16 +31,16 @@ import {
 } from "@/lib/queries/useInvitation";
 import { apiErrorMessage } from "@/lib/queries/axios";
 
-function defaultData(): InvitationData {
-  // Deep clone the sample so the admin starts from a complete, editable structure.
-  return JSON.parse(JSON.stringify(SAMPLE_DATA)) as InvitationData;
+function defaultData(componentKey: string): InvitationData {
+  return getSampleDataForComponent(componentKey);
 }
 
 export function InvitationEditor({ order }: { order: OrderDTO }) {
   const t = useTranslations("admin");
+  const componentKey = order.template!.componentKey;
   const existing = order.invitation ?? null;
   const [data, setData] = useState<InvitationData>(
-    existing ? (existing.data as InvitationData) : defaultData(),
+    existing ? (existing.data as InvitationData) : defaultData(componentKey),
   );
   const [slug, setSlug] = useState(existing?.slug ?? "");
   const [editLocale, setEditLocale] = useState<Locale>(data.defaultLocale);
@@ -57,7 +57,8 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
   const publishMut = usePublishInvitation();
 
   const theme = order.template!.themeDefaults;
-  const componentKey = order.template!.componentKey;
+  const fieldsSchema = order.template!.fieldsSchema;
+  const editLocales = data.locales?.length ? data.locales : LOCALES;
 
   // Admin preview: skip the full-screen envelope gate and defer heavy re-renders.
   const previewData = useMemo(
@@ -186,7 +187,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
         <Divider sx={{ mb: 2 }} />
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Editing language
+          {t("editingLanguage")}
         </Typography>
         <Tabs
           value={editLocale}
@@ -194,13 +195,13 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
           variant="scrollable"
           sx={{ mb: 3 }}
         >
-          {LOCALES.map((l) => (
+          {editLocales.map((l) => (
             <Tab key={l} value={l} label={LOCALE_LABELS[l]} />
           ))}
         </Tabs>
 
         <SchemaForm
-          schema={order.template!.fieldsSchema}
+          schema={fieldsSchema}
           value={data as unknown as Record<string, unknown>}
           editLocale={editLocale}
           onChange={(next) => setData(next as unknown as InvitationData)}

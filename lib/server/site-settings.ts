@@ -60,7 +60,7 @@ export async function updateSiteSettings(
 ): Promise<SiteSettingsDTO> {
   if (!prisma.siteSettings) {
     throw new Error(
-      "Database schema mismatch. Run `npm run db:push` and restart the dev server.",
+      "Database schema mismatch. Run `npm run db:migrate` and restart the dev server.",
     );
   }
 

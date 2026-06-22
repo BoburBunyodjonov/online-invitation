@@ -11,8 +11,8 @@ if [ -z "${DATABASE_URL:-}" ]; then
   export DATABASE_URL="postgresql://${POSTGRES_USER}:${ENCODED_PASS}@db:5432/${POSTGRES_DB}?schema=public"
 fi
 
-echo "[entrypoint] Applying database schema..."
-prisma db push --skip-generate
+echo "[entrypoint] Applying database migrations..."
+prisma migrate deploy
 
 if [ "${RUN_SEED:-false}" = "true" ]; then
   echo "[entrypoint] Seeding database..."

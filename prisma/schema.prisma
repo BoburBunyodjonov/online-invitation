@@ -1,5 +1,5 @@
 // Prisma schema for the wedding invitation platform.
-// DB: PostgreSQL (Neon free tier works natively with Vercel).
+// PostgreSQL everywhere: local dev (docker-compose.dev.yml), CI, Vercel Neon, Docker prod.
 
 generator client {
   provider = "prisma-client-js"
@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -61,16 +61,39 @@ enum OrderStatus {
 }
 
 model Invitation {
-  id          String   @id @default(cuid())
-  slug        String   @unique // public URL: /i/[slug]
-  orderId     String   @unique
-  order       Order    @relation(fields: [orderId], references: [id])
-  templateId  String
-  data        Json // filled values matching template.fieldsSchema, per locale
-  isPublished Boolean  @default(false)
-  views       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String         @id @default(cuid())
+  slug             String         @unique // public URL: /i/[slug]
+  orderId          String         @unique
+  order            Order          @relation(fields: [orderId], references: [id])
+  templateId       String
+  templateSnapshot Json? // locked { componentKey, fieldsSchema, themeDefaults, templateSlug, snapshotAt }
+  data             Json // filled values matching template.fieldsSchema, per locale
+  isPublished      Boolean        @default(false)
+  views            Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  rsvpResponses    RsvpResponse[]
+}
+
+enum RsvpStatus {
+  ATTENDING
+  NOT_ATTENDING
+  MAYBE
+}
+
+model RsvpResponse {
+  id           String     @id @default(cuid())
+  invitationId String
+  invitation   Invitation @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  guestName    String
+  phone        String?
+  status       RsvpStatus
+  guestCount   Int        @default(1)
+  message      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([invitationId])
 }
 
 model AdminUser {

@@ -11,9 +11,14 @@ import {
   IconButton,
   Paper,
   Stack,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
-import { PlusIcon, TrashIcon } from "@phosphor-icons/react";
-import type { FieldDef, FieldsSchema } from "@/lib/validation/field-schema";
+import { CaretDownIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
+import type { FieldDef, FieldsSchema, FieldSection } from "@/lib/validation/field-schema";
+import { FIELD_SECTION_ORDER } from "@/lib/validation/field-schema";
 import type { Locale } from "@/config/locales";
 import { ICON_KEYS } from "@/templates/shared/icon-map";
 import { getByPath, setByPath, type Path } from "./path-utils";
@@ -26,19 +31,63 @@ interface SchemaFormProps {
   onChange: (next: Record<string, unknown>) => void;
 }
 
+function groupBySection(schema: FieldsSchema) {
+  const groups = new Map<FieldSection | "other", Array<[string, FieldDef]>>();
+
+  for (const [name, def] of Object.entries(schema)) {
+    const section = def.section ?? "other";
+    const list = groups.get(section) ?? [];
+    list.push([name, def]);
+    groups.set(section, list);
+  }
+
+  const ordered: Array<{
+    section: FieldSection | "other";
+    fields: Array<[string, FieldDef]>;
+  }> = [];
+
+  for (const section of FIELD_SECTION_ORDER) {
+    const fields = groups.get(section);
+    if (fields?.length) ordered.push({ section, fields });
+  }
+
+  const other = groups.get("other");
+  if (other?.length) ordered.push({ section: "other", fields: other });
+
+  return ordered;
+}
+
 export function SchemaForm({
   schema,
   value,
   editLocale,
   onChange,
 }: SchemaFormProps) {
+  const t = useTranslations("admin.fields");
+  const sections = groupBySection(schema);
+
   const update = (path: Path, v: unknown) =>
     onChange(setByPath(value, path, v));
+
+  const fieldLabel = (name: string, def: FieldDef) => {
+    if (t.has(name as Parameters<typeof t.has>[0])) {
+      return t(name as Parameters<typeof t>[0]);
+    }
+    return def.label ?? name;
+  };
+
+  const sectionLabel = (section: FieldSection | "other") => {
+    if (section === "other") return t("section_other");
+    const key = `section_${section}` as Parameters<typeof t>[0];
+    if (t.has(key as Parameters<typeof t.has>[0])) {
+      return t(key);
+    }
+    return section;
+  };
 
   const renderField = (def: FieldDef, path: Path, label: string) => {
     const current = getByPath(value, path);
 
-    // Localized text/textarea: edit the value for the active locale.
     if (
       def.localized &&
       (def.type === "text" || def.type === "textarea")
@@ -48,12 +97,12 @@ export function SchemaForm({
       return (
         <TextField
           key={path.join(".")}
-          label={`${label} (${editLocale})`}
+          label={label}
           value={localizedVal}
           onChange={(e) => update(localizedPath, e.target.value)}
           fullWidth
           multiline={def.type === "textarea"}
-          minRows={def.type === "textarea" ? 2 : undefined}
+          minRows={def.type === "textarea" ? 3 : undefined}
           helperText={def.help}
         />
       );
@@ -70,7 +119,7 @@ export function SchemaForm({
             onChange={(e) => update(path, e.target.value)}
             fullWidth
             multiline={def.type === "textarea"}
-            minRows={def.type === "textarea" ? 2 : undefined}
+            minRows={def.type === "textarea" ? 3 : undefined}
             helperText={def.help}
           />
         );
@@ -184,7 +233,7 @@ export function SchemaForm({
                 >
                   <Box sx={{ flex: 1 }}>
                     <FileUploadField
-                      label={`Image ${i + 1}`}
+                      label={t("galleryItem", { index: i + 1 })}
                       value={url}
                       onChange={(u) => update([...path, i], u)}
                     />
@@ -203,7 +252,7 @@ export function SchemaForm({
                 onClick={() => update(path, [...arr, ""])}
                 sx={{ alignSelf: "flex-start" }}
               >
-                Add image
+                {t("addImage")}
               </Button>
             </Stack>
           </Box>
@@ -217,12 +266,12 @@ export function SchemaForm({
             variant="outlined"
             sx={{ p: 2, borderRadius: 2 }}
           >
-            <Typography variant="subtitle1" sx={{ mb: 2 }}>
+            <Typography variant="subtitle2" sx={{ mb: 2 }}>
               {label}
             </Typography>
             <Stack spacing={2}>
               {Object.entries(def.fields ?? {}).map(([k, d]) =>
-                renderField(d, [...path, k], d.label ?? k),
+                renderField(d, [...path, k], fieldLabel(k, d)),
               )}
             </Stack>
           </Paper>
@@ -232,7 +281,7 @@ export function SchemaForm({
         const arr = (current as unknown[]) ?? [];
         return (
           <Box key={path.join(".")}>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
               {label}
             </Typography>
             <Stack spacing={2}>
@@ -242,7 +291,9 @@ export function SchemaForm({
                     direction="row"
                     sx={{ justifyContent: "space-between", mb: 1 }}
                   >
-                    <Typography variant="subtitle2">Item {i + 1}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("scheduleItem", { index: i + 1 })}
+                    </Typography>
                     <IconButton
                       size="small"
                       onClick={() =>
@@ -254,7 +305,7 @@ export function SchemaForm({
                   </Stack>
                   <Stack spacing={2}>
                     {Object.entries(def.itemFields ?? {}).map(([k, d]) =>
-                      renderField(d, [...path, i, k], d.label ?? k),
+                      renderField(d, [...path, i, k], fieldLabel(k, d)),
                     )}
                   </Stack>
                 </Paper>
@@ -264,7 +315,7 @@ export function SchemaForm({
                 onClick={() => update(path, [...arr, {}])}
                 sx={{ alignSelf: "flex-start" }}
               >
-                Add item
+                {t("addScheduleItem")}
               </Button>
             </Stack>
           </Box>
@@ -277,10 +328,35 @@ export function SchemaForm({
   };
 
   return (
-    <Stack spacing={3}>
-      {Object.entries(schema).map(([name, def]) =>
-        renderField(def, [name], def.label ?? name),
-      )}
+    <Stack spacing={1}>
+      {sections.map(({ section, fields }, index) => (
+        <Accordion
+          key={section}
+          defaultExpanded={index < 3}
+          disableGutters
+          elevation={0}
+          sx={{
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: "12px !important",
+            "&:before": { display: "none" },
+            overflow: "hidden",
+          }}
+        >
+          <AccordionSummary expandIcon={<CaretDownIcon weight="bold" />}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              {sectionLabel(section)}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Stack spacing={2.5}>
+              {fields.map(([name, def]) =>
+                renderField(def, [name], fieldLabel(name, def)),
+              )}
+            </Stack>
+          </AccordionDetails>
+        </Accordion>
+      ))}
     </Stack>
   );
 }

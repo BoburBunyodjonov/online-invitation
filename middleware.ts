@@ -1,7 +1,10 @@
+import NextAuth from "next-auth";
 import createIntlMiddleware from "next-intl/middleware";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { authConfig } from "@/lib/server/auth.config";
 import { routing } from "./i18n/routing";
 
+const { auth } = NextAuth(authConfig);
 const intlMiddleware = createIntlMiddleware(routing);
 
 const LOCALELESS_PREFIXES = [
@@ -22,15 +25,12 @@ function isLocalelessPath(pathname: string) {
   return false;
 }
 
-export function middleware(request: NextRequest) {
+/** Validates JWT session (not just cookie presence) for admin routes. */
+export default auth((request) => {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const hasSession =
-      request.cookies.has("authjs.session-token") ||
-      request.cookies.has("__Secure-authjs.session-token");
-
-    if (!hasSession) {
+    if (!request.auth) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       url.searchParams.set("callbackUrl", pathname);
@@ -44,7 +44,7 @@ export function middleware(request: NextRequest) {
   }
 
   return intlMiddleware(request);
-}
+});
 
 export const config = {
   // uz-cyrl must come before uz so `/uz-cyrl` is not parsed as locale `uz`

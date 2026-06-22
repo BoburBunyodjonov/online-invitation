@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getTemplateBySlug } from "@/lib/server/templates";
+import { getPublishedTemplateBySlug } from "@/lib/server/templates";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
 import { ViewBeacon } from "@/components/ViewBeacon";
-import { SAMPLE_DATA, BLUE_ENVELOPE_SAMPLE } from "@/templates/sample-data";
+import { getSampleDataForComponent } from "@/templates/sample-data";
 import type { ThemeDefaults } from "@/lib/validation/template";
+import { shouldRenderViewBeacon } from "@/lib/server/view-tracking";
 
 export async function generateMetadata({
   params,
@@ -13,7 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const template = await getTemplateBySlug(slug);
+    const template = await getPublishedTemplateBySlug(slug);
     return {
       title: `${template.name} — Preview`,
       robots: { index: false },
@@ -37,17 +38,20 @@ export default async function TemplatePreviewPage({
 
   let template;
   try {
-    template = await getTemplateBySlug(slug);
+    template = await getPublishedTemplateBySlug(slug);
   } catch {
     notFound();
   }
 
-  const previewData =
-    template.componentKey === "blue-envelope" ? BLUE_ENVELOPE_SAMPLE : SAMPLE_DATA;
+  const previewData = getSampleDataForComponent(template.componentKey);
+
+  const showBeacon = await shouldRenderViewBeacon();
 
   return (
     <>
-      <ViewBeacon src={`/api/templates/${encodeURIComponent(slug)}/view`} />
+      {showBeacon && (
+        <ViewBeacon src={`/api/templates/${encodeURIComponent(slug)}/view`} />
+      )}
       <InvitationRenderer
         componentKey={template.componentKey}
         data={previewData}

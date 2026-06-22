@@ -6,29 +6,20 @@ import type {
   InvitationUpdate,
 } from "@/lib/validation/invitation";
 import type { Prisma } from "@/lib/generated/prisma";
-
-const RESERVED_SLUGS = new Set(["-", "opengraph-image"]);
-
-function slugify(input: string): string {
-  const result = input
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  if (!result || RESERVED_SLUGS.has(result) || result.length < 2) return "";
-  return result;
-}
-
-export function isValidInvitationSlug(slug: string): boolean {
-  return (
-    slug.length >= 2 &&
-    /^[a-z0-9-]+$/.test(slug) &&
-    !RESERVED_SLUGS.has(slug)
-  );
-}
+import { isValidInvitationSlug, slugify } from "./slug";
+import {
+  buildTemplateSnapshot,
+  resolveInvitationTemplate,
+} from "./template-snapshot";
+import {
+  getViewRequestContext,
+  shouldCountView,
+} from "./view-tracking";
+import {
+  clientIp,
+  rateLimit,
+  tooManyRequests,
+} from "./rate-limit";
 
 function slugBaseFromData(data: InvitationData): string {
   const groom = Object.values(data.groomName ?? {})
@@ -44,7 +35,6 @@ async function uniqueSlug(base: string): Promise<string> {
   const root = slugify(base) || "invitation";
   let candidate = root;
   let n = 1;
-  // Loop until we find a free slug.
   while (await prisma.invitation.findUnique({ where: { slug: candidate } })) {
     n += 1;
     candidate = `${root}-${n}`;
@@ -61,7 +51,13 @@ export async function getPublishedInvitationBySlug(slug: string) {
     where: { id: invitation.templateId },
   });
   if (!template) throw notFound("Template not found");
-  return { invitation, template };
+  const resolved = resolveInvitationTemplate(invitation, template);
+  return {
+    invitation,
+    template,
+    componentKey: resolved.componentKey,
+    theme: resolved.theme,
+  };
 }
 
 export async function getInvitationById(id: string) {
@@ -75,12 +71,27 @@ export async function getInvitationByOrderId(orderId: string) {
 }
 
 /** Increments views for a published invitation slug. */
-export async function recordInvitationView(slug: string): Promise<void> {
+export async function recordInvitationView(
+  slug: string,
+  req?: Request,
+): Promise<{ counted: boolean }> {
+  if (req) {
+    const ip = clientIp(req);
+    const rl = rateLimit(`view:invitation:${ip}`, 120, 60_000);
+    if (!rl.allowed) throw tooManyRequests(rl.retryAfterSec);
+
+    const ctx = getViewRequestContext(req);
+    if (!shouldCountView(ctx, "invitation", slug)) {
+      return { counted: false };
+    }
+  }
+
   const { invitation } = await getPublishedInvitationBySlug(slug);
   await prisma.invitation.update({
     where: { id: invitation.id },
     data: { views: { increment: 1 } },
   });
+  return { counted: true };
 }
 
 export async function createInvitation(input: InvitationCreate) {
@@ -88,6 +99,11 @@ export async function createInvitation(input: InvitationCreate) {
     where: { orderId: input.orderId },
   });
   if (existing) throw badRequest("This order already has an invitation");
+
+  const template = await prisma.template.findUnique({
+    where: { id: input.templateId },
+  });
+  if (!template) throw notFound("Template not found");
 
   const slug =
     input.slug && isValidInvitationSlug(input.slug)
@@ -99,6 +115,9 @@ export async function createInvitation(input: InvitationCreate) {
       orderId: input.orderId,
       templateId: input.templateId,
       slug,
+      templateSnapshot: buildTemplateSnapshot(
+        template,
+      ) as unknown as Prisma.InputJsonValue,
       data: input.data as unknown as Prisma.InputJsonValue,
       isPublished: input.isPublished ?? false,
     },
@@ -130,8 +149,22 @@ export async function publishInvitation(id: string) {
   if (!isValidInvitationSlug(slug)) {
     slug = await uniqueSlug(slugBaseFromData(data) || id);
   }
+
+  const template = await prisma.template.findUnique({
+    where: { id: invitation.templateId },
+  });
+  if (!template) throw notFound("Template not found");
+
   return prisma.invitation.update({
     where: { id },
-    data: { isPublished: true, slug },
+    data: {
+      isPublished: true,
+      slug,
+      templateSnapshot: buildTemplateSnapshot(
+        template,
+      ) as unknown as Prisma.InputJsonValue,
+    },
   });
 }
+
+export { isValidInvitationSlug, slugify } from "./slug";

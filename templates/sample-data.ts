@@ -78,20 +78,49 @@ export const SAMPLE_DATA: InvitationData = {
   ],
   backgroundMusic: undefined,
   unlockGate: true,
+  rsvpEnabled: true,
 };
 
 /** Canonical editable-fields schema shared by the bundled templates. */
 export const DEFAULT_FIELDS_SCHEMA: FieldsSchema = {
-  groomName: { type: "text", label: "Groom name", required: true, localized: true },
-  brideName: { type: "text", label: "Bride name", required: true, localized: true },
-  weddingDate: { type: "date", label: "Wedding date", required: true },
-  startTime: { type: "time", label: "Start time", required: true },
-  heroPhoto: { type: "image", label: "Hero photo" },
-  intro: { type: "textarea", label: "Intro text", localized: true },
-  greeting: { type: "text", label: "Gate greeting", localized: true },
+  groomName: {
+    type: "text",
+    label: "Groom name",
+    required: true,
+    localized: true,
+    section: "couple",
+  },
+  brideName: {
+    type: "text",
+    label: "Bride name",
+    required: true,
+    localized: true,
+    section: "couple",
+  },
+  weddingDate: {
+    type: "date",
+    label: "Wedding date",
+    required: true,
+    section: "event",
+  },
+  startTime: {
+    type: "time",
+    label: "Start time",
+    required: true,
+    section: "event",
+  },
+  heroPhoto: { type: "image", label: "Hero photo", section: "media" },
+  intro: { type: "textarea", label: "Intro text", localized: true, section: "text" },
+  greeting: {
+    type: "text",
+    label: "Gate greeting",
+    localized: true,
+    section: "text",
+  },
   verse: {
     type: "object",
     label: "Verse (optional)",
+    section: "verse",
     fields: {
       arabic: { type: "textarea", label: "Arabic" },
       translation: { type: "textarea", label: "Translation", localized: true },
@@ -101,6 +130,7 @@ export const DEFAULT_FIELDS_SCHEMA: FieldsSchema = {
   schedule: {
     type: "list",
     label: "Schedule",
+    section: "schedule",
     itemFields: {
       time: { type: "time", label: "Time" },
       label: { type: "text", label: "Label", localized: true },
@@ -110,6 +140,7 @@ export const DEFAULT_FIELDS_SCHEMA: FieldsSchema = {
   venue: {
     type: "object",
     label: "Venue",
+    section: "venue",
     fields: {
       name: { type: "text", label: "Name", localized: true },
       address: { type: "text", label: "Address", localized: true },
@@ -117,9 +148,61 @@ export const DEFAULT_FIELDS_SCHEMA: FieldsSchema = {
       lng: { type: "number", label: "Longitude" },
     },
   },
-  gallery: { type: "image[]", label: "Gallery" },
-  backgroundMusic: { type: "audio", label: "Background music" },
-  unlockGate: { type: "boolean", label: "Show unlock gate" },
+  gallery: { type: "image[]", label: "Gallery", section: "media" },
+  backgroundMusic: {
+    type: "audio",
+    label: "Background music",
+    section: "media",
+  },
+  unlockGate: {
+    type: "boolean",
+    label: "Show unlock gate",
+    section: "settings",
+  },
+  rsvpEnabled: {
+    type: "boolean",
+    label: "Enable RSVP",
+    section: "settings",
+  },
+};
+
+/** Beach / Islamic — full invitation with hero, schedule, gallery. */
+export const STANDARD_FIELDS_SCHEMA: FieldsSchema = DEFAULT_FIELDS_SCHEMA;
+
+/** Blue Envelope — no hero, schedule, or gallery; greeting drives the hero block. */
+export const BLUE_ENVELOPE_FIELDS_SCHEMA: FieldsSchema = {
+  groomName: DEFAULT_FIELDS_SCHEMA.groomName,
+  brideName: DEFAULT_FIELDS_SCHEMA.brideName,
+  weddingDate: DEFAULT_FIELDS_SCHEMA.weddingDate,
+  startTime: DEFAULT_FIELDS_SCHEMA.startTime,
+  intro: DEFAULT_FIELDS_SCHEMA.intro,
+  greeting: DEFAULT_FIELDS_SCHEMA.greeting,
+  verse: DEFAULT_FIELDS_SCHEMA.verse,
+  venue: DEFAULT_FIELDS_SCHEMA.venue,
+  backgroundMusic: DEFAULT_FIELDS_SCHEMA.backgroundMusic,
+  unlockGate: DEFAULT_FIELDS_SCHEMA.unlockGate,
+  rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
+};
+
+/** Uzbek heritage style — envelope, heritage hero, calendar, venue, countdown. */
+export const UZB_STYLE_FIELDS_SCHEMA: FieldsSchema = {
+  groomName: DEFAULT_FIELDS_SCHEMA.groomName,
+  brideName: DEFAULT_FIELDS_SCHEMA.brideName,
+  weddingDate: DEFAULT_FIELDS_SCHEMA.weddingDate,
+  startTime: DEFAULT_FIELDS_SCHEMA.startTime,
+  intro: DEFAULT_FIELDS_SCHEMA.intro,
+  greeting: DEFAULT_FIELDS_SCHEMA.greeting,
+  venue: DEFAULT_FIELDS_SCHEMA.venue,
+  backgroundMusic: DEFAULT_FIELDS_SCHEMA.backgroundMusic,
+  unlockGate: DEFAULT_FIELDS_SCHEMA.unlockGate,
+  rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
+};
+
+export const FIELDS_SCHEMA_BY_COMPONENT: Record<string, FieldsSchema> = {
+  "beach-romantic": STANDARD_FIELDS_SCHEMA,
+  "islamic-elegant": STANDARD_FIELDS_SCHEMA,
+  "blue-envelope": BLUE_ENVELOPE_FIELDS_SCHEMA,
+  "uzb-style": UZB_STYLE_FIELDS_SCHEMA,
 };
 
 export const BEACH_THEME: ThemeDefaults = {
@@ -200,6 +283,7 @@ export const BLUE_ENVELOPE_SAMPLE: InvitationData = {
   gallery: [],
   backgroundMusic: "/templates/blue-envelope/assets/skripka%20music.mp3",
   unlockGate: true,
+  rsvpEnabled: true,
 };
 
 export const BLUE_ENVELOPE_THEME: ThemeDefaults = {
@@ -208,3 +292,79 @@ export const BLUE_ENVELOPE_THEME: ThemeDefaults = {
   fontPair: "playfair-vibes",
   mode: "light",
 };
+
+/** Sample data for the uzb-style heritage template. */
+export const UZB_STYLE_SAMPLE: InvitationData = {
+  locales: ["ru", "uz"],
+  defaultLocale: "uz",
+  groomName: {
+    ru: "Темурбек",
+    en: "Temurbek",
+    uz: "Temurbek",
+    "uz-Cyrl": "Темурбек",
+  },
+  brideName: {
+    ru: "Нодирабегим",
+    en: "Nodirabegim",
+    uz: "Nodirabegim",
+    "uz-Cyrl": "Нодирабегим",
+  },
+  weddingDate: "2027-04-05",
+  startTime: "18:00",
+  intro: {
+    ru: "В этот прекрасный день мы соединяем наши сердца и начинаем новую историю — историю нашей любви.\n\nБудем счастливы разделить радость этого особенного момента вместе с вами.\n\nС любовью приглашаем вас на нашу свадьбу.",
+    en: "",
+    uz: "Hayotimizdagi eng baxtli kunlardan biri — nikoh to'yimizni siz bilan birga nishonlashni niyat qildik.\n\nSizni ushbu kechamizga samimiy taklif etamiz.\n\nQuvonchli kunimizda aziz mehmonimiz bo'lishingizni intizorlik bilan kutamiz.",
+    "uz-Cyrl": "",
+  },
+  greeting: {
+    ru: "Дорогие наши родные и близкие!",
+    en: "",
+    uz: "Aziz va qadrdon insonimiz!",
+    "uz-Cyrl": "",
+  },
+  schedule: [],
+  venue: {
+    name: {
+      ru: "ресторан ЯККА САРОЙ",
+      en: "Yakka Saroy Restaurant",
+      uz: "Yakka Saroy restorani",
+      "uz-Cyrl": "Yakka Saroy restorani",
+    },
+    address: {
+      ru: "город Карши\nОриентир: дорога Карши-Бешкент, Каршинский филиал ТАТУ.",
+      en: "Qarshi city",
+      uz: "Qarshi shaxri\nMo'ljal: Qarshi-Beshkent yo'li, TATU Qarshi filiali.",
+      "uz-Cyrl": "",
+    },
+    lat: 38.824851,
+    lng: 65.715197,
+  },
+  gallery: [],
+  backgroundMusic: "/templates/uzb-style/assets/uzbek%20music.mp3",
+  unlockGate: true,
+  rsvpEnabled: true,
+};
+
+export const UZB_STYLE_THEME: ThemeDefaults = {
+  backgroundColor: "#fffdf6",
+  accentColor: "#c21612",
+  fontPair: "playfair-vibes",
+  mode: "light",
+};
+
+export const SAMPLE_DATA_BY_COMPONENT: Record<string, InvitationData> = {
+  "beach-romantic": SAMPLE_DATA,
+  "islamic-elegant": SAMPLE_DATA,
+  "blue-envelope": BLUE_ENVELOPE_SAMPLE,
+  "uzb-style": UZB_STYLE_SAMPLE,
+};
+
+export function getFieldsSchemaForComponent(componentKey: string): FieldsSchema {
+  return FIELDS_SCHEMA_BY_COMPONENT[componentKey] ?? DEFAULT_FIELDS_SCHEMA;
+}
+
+export function getSampleDataForComponent(componentKey: string): InvitationData {
+  const source = SAMPLE_DATA_BY_COMPONENT[componentKey] ?? SAMPLE_DATA;
+  return JSON.parse(JSON.stringify(source)) as InvitationData;
+}

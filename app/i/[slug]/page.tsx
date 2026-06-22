@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { getPublishedInvitationBySlug } from "@/lib/server/invitations";
 import { InvitationRenderer } from "@/components/InvitationRenderer";
 import { ViewBeacon } from "@/components/ViewBeacon";
+import { RsvpSection } from "@/components/RsvpSection";
 import type { InvitationData } from "@/lib/validation/invitation-data";
-import type { ThemeDefaults } from "@/lib/validation/template";
+import { shouldRenderViewBeacon } from "@/lib/server/view-tracking";
 
 /**
  * ISR: the page is statically generated and revalidated every 30s, so admin
@@ -62,7 +63,7 @@ export default async function InvitationPage({
     notFound();
   }
 
-  const { invitation, template } = result;
+  const { invitation, componentKey, theme } = result;
   const data = invitation.data as unknown as InvitationData;
 
   const names = `${pick(data, "groomName")} & ${pick(data, "brideName")}`;
@@ -79,18 +80,31 @@ export default async function InvitationPage({
     },
   };
 
+  const showBeacon = await shouldRenderViewBeacon();
+  const rsvpEnabled = data.rsvpEnabled !== false;
+
   return (
     <>
-      <ViewBeacon src={`/api/i/${encodeURIComponent(slug)}/view`} />
+      {showBeacon && (
+        <ViewBeacon src={`/api/i/${encodeURIComponent(slug)}/view`} />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <InvitationRenderer
-        componentKey={template.componentKey}
+        componentKey={componentKey}
         data={data}
-        theme={template.themeDefaults as ThemeDefaults}
+        theme={theme}
       />
+      {rsvpEnabled && (
+        <RsvpSection
+          slug={slug}
+          locale={data.defaultLocale}
+          accent={theme.accentColor}
+          backgroundColor={theme.backgroundColor}
+        />
+      )}
     </>
   );
 }

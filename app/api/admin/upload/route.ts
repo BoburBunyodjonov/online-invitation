@@ -5,6 +5,7 @@ import { put } from "@vercel/blob";
 import { requireAdmin } from "@/lib/server/require-admin";
 import { handleApiError, badRequest } from "@/lib/server/api-error";
 import { getSiteUrl } from "@/lib/seo/site-url";
+import { clientIp, rateLimit, tooManyRequests } from "@/lib/server/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -15,7 +16,11 @@ function safeName(name: string) {
 /** Upload to Vercel Blob, or to local disk when self-hosting without Blob. */
 export async function POST(req: Request) {
   try {
-    await requireAdmin();
+    const session = await requireAdmin();
+
+    const ip = clientIp(req);
+    const rl = rateLimit(`upload:${session.user?.email ?? ip}`, 30, 60 * 60_000);
+    if (!rl.allowed) return tooManyRequests(rl.retryAfterSec);
 
     const form = await req.formData();
     const file = form.get("file");

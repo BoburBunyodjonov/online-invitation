@@ -1,5 +1,3 @@
-"use client";
-
 import { Box, Typography, Stack, type SxProps, type Theme } from "@mui/material";
 
 export function AdminPageHeader({
