@@ -13,22 +13,30 @@ import {
   FormControlLabel,
   Switch,
   Alert,
+  Divider,
 } from "@mui/material";
 import { REGISTRY_KEYS } from "@/templates/registry";
 import {
   DEFAULT_FIELDS_SCHEMA,
-  BEACH_THEME,
   getFieldsSchemaForComponent,
+  getThemeForComponent,
 } from "@/templates/sample-data";
 import type { TemplateDTO } from "@/lib/types";
+import type { FieldsSchema } from "@/lib/validation/field-schema";
+import type { ThemeDefaults } from "@/lib/validation/template";
 import { CURRENCIES } from "@/lib/format-price";
 import {
   useCreateTemplate,
   useUpdateTemplate,
 } from "@/lib/queries/useTemplates";
-import { templateInputSchema } from "@/lib/validation/template";
+import { fieldsSchemaSchema } from "@/lib/validation/field-schema";
+import { templateInputSchema, themeDefaultsSchema } from "@/lib/validation/template";
 import { apiErrorMessage } from "@/lib/queries/axios";
 import { FileUploadField } from "./FileUploadField";
+import { ThemePickerField } from "./ThemePickerField";
+import { FieldsSchemaEditor } from "./FieldsSchemaEditor";
+import { PreviewImagesField } from "./PreviewImagesField";
+import { NewTemplateChecklist } from "./NewTemplateChecklist";
 
 export function TemplateFormDialog({
   template,
@@ -45,6 +53,9 @@ export function TemplateFormDialog({
     template?.componentKey ?? REGISTRY_KEYS[0],
   );
   const [thumbnail, setThumbnail] = useState(template?.thumbnail ?? "");
+  const [previewImages, setPreviewImages] = useState<string[]>(
+    template?.previewImages ?? [],
+  );
   const [priceAmount, setPriceAmount] = useState(
     String(template?.priceAmount ?? 0),
   );
@@ -52,11 +63,11 @@ export function TemplateFormDialog({
   const [isPublished, setIsPublished] = useState(template?.isPublished ?? false);
   const [badgeNew, setBadgeNew] = useState(template?.badgeNew ?? false);
   const [badgePopular, setBadgePopular] = useState(template?.badgePopular ?? false);
-  const [fieldsSchemaText, setFieldsSchemaText] = useState(
-    JSON.stringify(template?.fieldsSchema ?? DEFAULT_FIELDS_SCHEMA, null, 2),
+  const [fieldsSchema, setFieldsSchema] = useState<FieldsSchema>(
+    (template?.fieldsSchema as FieldsSchema) ?? DEFAULT_FIELDS_SCHEMA,
   );
-  const [themeText, setThemeText] = useState(
-    JSON.stringify(template?.themeDefaults ?? BEACH_THEME, null, 2),
+  const [themeDefaults, setThemeDefaults] = useState<ThemeDefaults>(
+    (template?.themeDefaults as ThemeDefaults) ?? getThemeForComponent(REGISTRY_KEYS[0]),
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -66,13 +77,16 @@ export function TemplateFormDialog({
 
   const handleSave = async () => {
     setError(null);
-    let fieldsSchema: unknown;
-    let themeDefaults: unknown;
-    try {
-      fieldsSchema = JSON.parse(fieldsSchemaText);
-      themeDefaults = JSON.parse(themeText);
-    } catch {
-      setError("Fields schema / theme must be valid JSON");
+
+    const parsedFields = fieldsSchemaSchema.safeParse(fieldsSchema);
+    if (!parsedFields.success) {
+      setError(parsedFields.error.issues[0]?.message ?? "Invalid fields schema");
+      return;
+    }
+
+    const parsedTheme = themeDefaultsSchema.safeParse(themeDefaults);
+    if (!parsedTheme.success) {
+      setError(parsedTheme.error.issues[0]?.message ?? "Invalid theme");
       return;
     }
 
@@ -82,9 +96,9 @@ export function TemplateFormDialog({
       category,
       componentKey,
       thumbnail,
-      previewImages: template?.previewImages ?? [],
-      fieldsSchema,
-      themeDefaults,
+      previewImages,
+      fieldsSchema: parsedFields.data,
+      themeDefaults: parsedTheme.data,
       priceAmount: Math.max(0, Math.floor(Number(priceAmount) || 0)),
       currency,
       isPublished,
@@ -115,6 +129,8 @@ export function TemplateFormDialog({
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           {error && <Alert severity="error">{error}</Alert>}
+          {!isEdit && <NewTemplateChecklist componentKey={componentKey} />}
+
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
               label="Name"
@@ -145,9 +161,8 @@ export function TemplateFormDialog({
                 const key = e.target.value;
                 setComponentKey(key);
                 if (!isEdit) {
-                  setFieldsSchemaText(
-                    JSON.stringify(getFieldsSchemaForComponent(key), null, 2),
-                  );
+                  setFieldsSchema(getFieldsSchemaForComponent(key));
+                  setThemeDefaults(getThemeForComponent(key));
                 }
               }}
               fullWidth
@@ -191,24 +206,15 @@ export function TemplateFormDialog({
             onChange={setThumbnail}
           />
 
-          <TextField
-            label="Fields schema (JSON)"
-            value={fieldsSchemaText}
-            onChange={(e) => setFieldsSchemaText(e.target.value)}
-            multiline
-            minRows={6}
-            fullWidth
-            slotProps={{ htmlInput: { style: { fontFamily: "monospace", fontSize: 12 } } }}
-          />
-          <TextField
-            label="Theme defaults (JSON)"
-            value={themeText}
-            onChange={(e) => setThemeText(e.target.value)}
-            multiline
-            minRows={4}
-            fullWidth
-            slotProps={{ htmlInput: { style: { fontFamily: "monospace", fontSize: 12 } } }}
-          />
+          <PreviewImagesField value={previewImages} onChange={setPreviewImages} />
+
+          <Divider />
+
+          <ThemePickerField value={themeDefaults} onChange={setThemeDefaults} />
+
+          <Divider />
+
+          <FieldsSchemaEditor value={fieldsSchema} onChange={setFieldsSchema} />
 
           <FormControlLabel
             control={

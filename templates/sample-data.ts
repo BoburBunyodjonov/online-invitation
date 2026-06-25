@@ -360,8 +360,26 @@ export const SAMPLE_DATA_BY_COMPONENT: Record<string, InvitationData> = {
   "uzb-style": UZB_STYLE_SAMPLE,
 };
 
+export const THEME_BY_COMPONENT: Record<string, ThemeDefaults> = {
+  "beach-romantic": BEACH_THEME,
+  "islamic-elegant": ISLAMIC_THEME,
+  "blue-envelope": BLUE_ENVELOPE_THEME,
+  "uzb-style": UZB_STYLE_THEME,
+};
+
+export const THEME_PRESETS: Record<string, ThemeDefaults> = {
+  beach: BEACH_THEME,
+  islamic: ISLAMIC_THEME,
+  "blue-envelope": BLUE_ENVELOPE_THEME,
+  "uzb-style": UZB_STYLE_THEME,
+};
+
 export function getFieldsSchemaForComponent(componentKey: string): FieldsSchema {
   return FIELDS_SCHEMA_BY_COMPONENT[componentKey] ?? DEFAULT_FIELDS_SCHEMA;
+}
+
+export function getThemeForComponent(componentKey: string): ThemeDefaults {
+  return { ...(THEME_BY_COMPONENT[componentKey] ?? BEACH_THEME) };
 }
 
 export function getSampleDataForComponent(componentKey: string): InvitationData {

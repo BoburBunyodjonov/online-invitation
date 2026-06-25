@@ -123,11 +123,36 @@ Guests can confirm attendance, decline, or mark "not sure".
 
 ## Adding a template
 
-1. Create a component under `templates/<key>/index.tsx` using the shared blocks
-   in `templates/shared/`.
-2. Register it in `templates/registry.ts`.
-3. In the admin Templates screen, create a DB template pointing at that
-   `componentKey`, with a `fieldsSchema` and `themeDefaults`.
+Use this checklist when shipping a new invitation design.
+
+### Developer steps (code)
+
+- [ ] **Component** — Create `templates/<key>/index.tsx`. Reuse blocks from `templates/shared/` (`CountdownTimer`, `VenueMap`, `PhotoGallery`, …) where possible.
+- [ ] **Registry** — Import the component in `templates/registry.ts` and add it to `TEMPLATE_REGISTRY`.
+- [ ] **Sample data** (recommended) — In `templates/sample-data.ts`, add entries to:
+  - `FIELDS_SCHEMA_BY_COMPONENT` — which fields the admin form shows
+  - `THEME_BY_COMPONENT` — default colors / font / mode
+  - `SAMPLE_DATA_BY_COMPONENT` — realistic preview content
+- [ ] **Assets** — Put static images/audio under `public/templates/<key>/assets/` if needed.
+- [ ] **Local preview** — Run `npm run dev` and open `/templates/<slug>/preview` after creating the DB row (below).
+
+### Admin steps (no code)
+
+- [ ] **Templates → New template** — Pick the `componentKey`, name, slug, category, price.
+- [ ] **Thumbnail** — Upload a cover image for the landing gallery.
+- [ ] **Preview images** — Upload 1–3 screenshots; the first is used as a fallback on catalogue cards.
+- [ ] **Theme** — Use the color pickers / presets (background, accent, light/dark).
+- [ ] **Editable fields** — Toggle which sections appear in the invitation editor (couple, schedule, RSVP, …).
+- [ ] **Publish** — Turn on **Published**, then open `/templates/<slug>/preview` and create a test order.
+
+### Quick reference
+
+```
+templates/<key>/index.tsx     → React layout
+templates/registry.ts         → componentKey mapping
+templates/sample-data.ts      → defaults for admin + preview
+Admin → Templates             → DB catalog row (theme, fields, images)
+```
 
 ## Deploy (Vercel)
 

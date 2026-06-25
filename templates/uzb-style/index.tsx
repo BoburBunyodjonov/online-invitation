@@ -19,6 +19,7 @@ import {
   toUzbStyleLang,
   type UzbStyleLang,
 } from "./locales";
+import { TemplateCredit } from "../shared/TemplateCredit";
 import "./styles.css";
 
 const ASSETS = "/templates/uzb-style/assets";
@@ -587,18 +588,7 @@ function UzbStyleInner({ data }: { data: InvitationData }) {
           </section>
         </div>
 
-        <footer className="invite-credit">
-          by
-          <a
-            className="invite-credit-link"
-            href="https://t.me/+uIKM6GREFTozNjdi"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="InviteStudio bot"
-          >
-            InviteStudio
-          </a>
-        </footer>
+        <TemplateCredit />
       </main>
 
       <audio ref={audioRef} src={musicSrc} preload="auto" loop />
