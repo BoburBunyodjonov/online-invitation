@@ -1,4 +1,4 @@
-import { LOCALES, isLocale, type Locale } from "@/config/locales";
+import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from "@/config/locales";
 import { LOCALE_PATH_SEGMENT } from "@/i18n/routing";
 import { getSiteUrl } from "./site-url";
 
@@ -34,6 +34,6 @@ export function localizedAlternateLanguages(): Record<string, string> {
   ]);
   return Object.fromEntries([
     ...entries,
-    ["x-default", getLocalizedUrl("ru")],
+    ["x-default", getLocalizedUrl(DEFAULT_LOCALE)],
   ]);
 }

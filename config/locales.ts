@@ -2,10 +2,10 @@
  * Locales supported across the platform UI (next-intl) AND inside invitation
  * content (each invitation stores localized values keyed by these codes).
  */
-export const LOCALES = ["ru", "en", "uz", "uz-Cyrl"] as const;
+export const LOCALES = ["uz", "ru", "en", "uz-Cyrl"] as const;
 export type Locale = (typeof LOCALES)[number];
 
-export const DEFAULT_LOCALE: Locale = "ru";
+export const DEFAULT_LOCALE: Locale = "uz";
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   ru: "Русский",

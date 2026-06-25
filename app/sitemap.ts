@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/server/db";
 import { getSiteUrl } from "@/lib/seo/site-url";
-import { LOCALES } from "@/config/locales";
+import { DEFAULT_LOCALE, LOCALES } from "@/config/locales";
 import { getLocalizedUrl } from "@/lib/seo/locale-url";
 
 export const revalidate = 3600;
@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = LOCALES.map((locale) => ({
     url: getLocalizedUrl(locale),
     changeFrequency: "weekly",
-    priority: locale === "ru" ? 1 : 0.9,
+    priority: locale === DEFAULT_LOCALE ? 1 : 0.9,
     lastModified: new Date(),
   }));
 
