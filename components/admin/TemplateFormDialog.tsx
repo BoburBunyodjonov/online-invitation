@@ -18,6 +18,7 @@ import {
 import { REGISTRY_KEYS } from "@/templates/registry";
 import {
   DEFAULT_FIELDS_SCHEMA,
+  getCatalogDefaultsForComponent,
   getFieldsSchemaForComponent,
   getThemeForComponent,
 } from "@/templates/sample-data";
@@ -31,6 +32,7 @@ import {
 } from "@/lib/queries/useTemplates";
 import { fieldsSchemaSchema } from "@/lib/validation/field-schema";
 import { templateInputSchema, themeDefaultsSchema } from "@/lib/validation/template";
+import { formatZodError } from "@/lib/validation/format-zod-error";
 import { apiErrorMessage } from "@/lib/queries/axios";
 import { FileUploadField } from "./FileUploadField";
 import { ThemePickerField } from "./ThemePickerField";
@@ -46,15 +48,17 @@ export function TemplateFormDialog({
   onClose: () => void;
 }) {
   const isEdit = Boolean(template);
+  const initialKey = template?.componentKey ?? REGISTRY_KEYS[0];
+  const initialCatalog = !template ? getCatalogDefaultsForComponent(initialKey) : undefined;
   const [name, setName] = useState(template?.name ?? "");
   const [slug, setSlug] = useState(template?.slug ?? "");
   const [category, setCategory] = useState(template?.category ?? "classic");
-  const [componentKey, setComponentKey] = useState(
-    template?.componentKey ?? REGISTRY_KEYS[0],
+  const [componentKey, setComponentKey] = useState(initialKey);
+  const [thumbnail, setThumbnail] = useState(
+    template?.thumbnail ?? initialCatalog?.thumbnail ?? "",
   );
-  const [thumbnail, setThumbnail] = useState(template?.thumbnail ?? "");
   const [previewImages, setPreviewImages] = useState<string[]>(
-    template?.previewImages ?? [],
+    template?.previewImages ?? initialCatalog?.previewImages ?? [],
   );
   const [priceAmount, setPriceAmount] = useState(
     String(template?.priceAmount ?? 0),
@@ -67,9 +71,24 @@ export function TemplateFormDialog({
     (template?.fieldsSchema as FieldsSchema) ?? DEFAULT_FIELDS_SCHEMA,
   );
   const [themeDefaults, setThemeDefaults] = useState<ThemeDefaults>(
-    (template?.themeDefaults as ThemeDefaults) ?? getThemeForComponent(REGISTRY_KEYS[0]),
+    (template?.themeDefaults as ThemeDefaults) ??
+      getThemeForComponent(template?.componentKey ?? REGISTRY_KEYS[0]),
   );
+  const [thumbnailTouched, setThumbnailTouched] = useState(Boolean(template?.thumbnail));
   const [error, setError] = useState<string | null>(null);
+
+  const applyComponentDefaults = (key: string, resetMedia: boolean) => {
+    setFieldsSchema(getFieldsSchemaForComponent(key));
+    setThemeDefaults(getThemeForComponent(key));
+    if (resetMedia) {
+      const catalog = getCatalogDefaultsForComponent(key);
+      if (catalog) {
+        setThumbnail(catalog.thumbnail);
+        setPreviewImages(catalog.previewImages);
+        setThumbnailTouched(false);
+      }
+    }
+  };
 
   const createMut = useCreateTemplate();
   const updateMut = useUpdateTemplate();
@@ -80,13 +99,13 @@ export function TemplateFormDialog({
 
     const parsedFields = fieldsSchemaSchema.safeParse(fieldsSchema);
     if (!parsedFields.success) {
-      setError(parsedFields.error.issues[0]?.message ?? "Invalid fields schema");
+      setError(formatZodError(parsedFields.error));
       return;
     }
 
     const parsedTheme = themeDefaultsSchema.safeParse(themeDefaults);
     if (!parsedTheme.success) {
-      setError(parsedTheme.error.issues[0]?.message ?? "Invalid theme");
+      setError(formatZodError(parsedTheme.error));
       return;
     }
 
@@ -107,7 +126,8 @@ export function TemplateFormDialog({
     });
 
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Validation failed");
+      setThumbnailTouched(true);
+      setError(formatZodError(parsed.error));
       return;
     }
 
@@ -161,8 +181,7 @@ export function TemplateFormDialog({
                 const key = e.target.value;
                 setComponentKey(key);
                 if (!isEdit) {
-                  setFieldsSchema(getFieldsSchemaForComponent(key));
-                  setThemeDefaults(getThemeForComponent(key));
+                  applyComponentDefaults(key, true);
                 }
               }}
               fullWidth
@@ -203,7 +222,12 @@ export function TemplateFormDialog({
           <FileUploadField
             label="Thumbnail"
             value={thumbnail}
-            onChange={setThumbnail}
+            onChange={(url) => {
+              setThumbnail(url);
+              setThumbnailTouched(true);
+            }}
+            error={thumbnailTouched && !thumbnail.trim() ? "Thumbnail is required" : undefined}
+            helperText="Required — upload an image or use the default from the component"
           />
 
           <PreviewImagesField value={previewImages} onChange={setPreviewImages} />

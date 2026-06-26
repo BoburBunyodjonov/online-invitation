@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { Prisma } from "@/lib/generated/prisma";
 import { reportError } from "@/lib/monitoring/report-error";
+import { formatZodError } from "@/lib/validation/format-zod-error";
 
 /**
  * Centralized API error type + handler used by every Route Handler so they all
@@ -35,7 +36,7 @@ export function handleApiError(error: unknown): NextResponse {
 
   if (error instanceof ZodError) {
     return NextResponse.json(
-      { error: "Validation failed", details: error.issues },
+      { error: formatZodError(error), details: error.issues },
       { status: 422 },
     );
   }

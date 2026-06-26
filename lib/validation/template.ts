@@ -2,6 +2,23 @@ import { z } from "zod";
 import { fieldsSchemaSchema } from "./field-schema";
 import { currencySchema } from "@/lib/format-price";
 
+/** Absolute URL or site-relative path (e.g. /templates/foo/assets/bar.jpg). */
+export const thumbnailSchema = z
+  .string()
+  .min(1, "Thumbnail is required")
+  .refine(
+    (value) => value.startsWith("/") || /^https?:\/\//i.test(value),
+    "Thumbnail must be a full URL or a path starting with /",
+  );
+
+export const previewImageSchema = z
+  .string()
+  .min(1)
+  .refine(
+    (value) => value.startsWith("/") || /^https?:\/\//i.test(value),
+    "Each preview image must be a full URL or a path starting with /",
+  );
+
 export const themeDefaultsSchema = z.object({
   backgroundColor: z.string(),
   accentColor: z.string(),
@@ -18,8 +35,8 @@ export const templateInputSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers and dashes"),
   name: z.string().min(1),
   category: z.string().min(1),
-  thumbnail: z.string().url().or(z.string().min(1)),
-  previewImages: z.array(z.string()).default([]),
+  thumbnail: thumbnailSchema,
+  previewImages: z.array(previewImageSchema).default([]),
   componentKey: z.string().min(1),
   fieldsSchema: fieldsSchemaSchema,
   themeDefaults: themeDefaultsSchema,

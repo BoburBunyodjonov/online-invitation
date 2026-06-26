@@ -500,6 +500,47 @@ export function getThemeForComponent(componentKey: string): ThemeDefaults {
   return { ...(THEME_BY_COMPONENT[componentKey] ?? BEACH_THEME) };
 }
 
+export const TEMPLATE_CATALOG_DEFAULTS: Record<
+  string,
+  { thumbnail: string; previewImages: string[] }
+> = {
+  "beach-romantic": {
+    thumbnail:
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=85",
+    previewImages: SAMPLE_DATA.gallery,
+  },
+  "islamic-elegant": {
+    thumbnail:
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=85",
+    previewImages: SAMPLE_DATA.gallery,
+  },
+  "blue-envelope": {
+    thumbnail: "/templates/blue-envelope/assets/blue%20ornament%20.png",
+    previewImages: [
+      "/templates/blue-envelope/assets/blue%20ornament%20.png",
+      "/templates/blue-envelope/assets/rings%20blue.png",
+    ],
+  },
+  "uzb-style": {
+    thumbnail: "/templates/uzb-style/assets/couple.png",
+    previewImages: [
+      "/templates/uzb-style/assets/couple.png",
+      "/templates/uzb-style/assets/border%20ornament.png",
+    ],
+  },
+  "gold-elegance": {
+    thumbnail: "/templates/gold-elegance/assets/wedding-hero.jpg",
+    previewImages: [
+      "/templates/gold-elegance/assets/wedding-hero.jpg",
+      "/templates/gold-elegance/assets/hands.png",
+    ],
+  },
+};
+
+export function getCatalogDefaultsForComponent(componentKey: string) {
+  return TEMPLATE_CATALOG_DEFAULTS[componentKey];
+}
+
 export function getSampleDataForComponent(componentKey: string): InvitationData {
   const source = SAMPLE_DATA_BY_COMPONENT[componentKey] ?? SAMPLE_DATA;
   return JSON.parse(JSON.stringify(source)) as InvitationData;

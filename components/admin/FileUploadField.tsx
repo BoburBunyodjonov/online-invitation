@@ -11,12 +11,16 @@ export function FileUploadField({
   value,
   accept = "image/*",
   preview = true,
+  error,
+  helperText,
   onChange,
 }: {
   label: string;
   value?: string;
   accept?: string;
   preview?: boolean;
+  error?: string;
+  helperText?: string;
   onChange: (url: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +40,9 @@ export function FileUploadField({
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value)}
           fullWidth
-          placeholder="https://..."
+          placeholder="https://... or /templates/..."
+          error={Boolean(error)}
+          helperText={error ?? helperText}
         />
         <Button
           variant="outlined"

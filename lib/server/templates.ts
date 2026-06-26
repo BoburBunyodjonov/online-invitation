@@ -1,7 +1,8 @@
 import { prisma } from "./db";
-import { notFound } from "./api-error";
+import { badRequest, notFound } from "./api-error";
 import type { TemplateInput, TemplateUpdate } from "@/lib/validation/template";
 import type { Prisma } from "@/lib/generated/prisma";
+import { Prisma as PrismaRuntime } from "@/lib/generated/prisma";
 import {
   getViewRequestContext,
   shouldCountView,
@@ -75,14 +76,24 @@ export async function recordTemplatePreviewView(
 
 export async function createTemplate(input: TemplateInput) {
   const { previewImages, fieldsSchema, themeDefaults, ...rest } = input;
-  return prisma.template.create({
-    data: {
-      ...rest,
-      previewImages: previewImages as unknown as Prisma.InputJsonValue,
-      fieldsSchema: fieldsSchema as unknown as Prisma.InputJsonValue,
-      themeDefaults: themeDefaults as unknown as Prisma.InputJsonValue,
-    },
-  });
+  try {
+    return await prisma.template.create({
+      data: {
+        ...rest,
+        previewImages: previewImages as unknown as Prisma.InputJsonValue,
+        fieldsSchema: fieldsSchema as unknown as Prisma.InputJsonValue,
+        themeDefaults: themeDefaults as unknown as Prisma.InputJsonValue,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof PrismaRuntime.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      throw badRequest("A template with this slug already exists");
+    }
+    throw error;
+  }
 }
 
 export async function updateTemplate(id: string, input: TemplateUpdate) {
