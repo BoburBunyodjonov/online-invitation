@@ -6,10 +6,12 @@ import {
   STANDARD_FIELDS_SCHEMA,
   BLUE_ENVELOPE_FIELDS_SCHEMA,
   UZB_STYLE_FIELDS_SCHEMA,
+  GOLD_ELEGANCE_FIELDS_SCHEMA,
   BEACH_THEME,
   ISLAMIC_THEME,
   BLUE_ENVELOPE_THEME,
   UZB_STYLE_THEME,
+  GOLD_ELEGANCE_THEME,
 } from "../templates/sample-data";
 import {
   DEFAULT_LANDING_TEXTS,
@@ -110,7 +112,36 @@ async function main() {
       badgeNew: true,
     },
   });
-  console.log("✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope, uzb-style");
+  console.log("✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope, uzb-style, gold-elegance");
+
+  await prisma.template.upsert({
+    where: { slug: "gold-elegance" },
+    update: {
+      componentKey: "gold-elegance",
+      fieldsSchema: GOLD_ELEGANCE_FIELDS_SCHEMA as object,
+      isPublished: true,
+      priceAmount: 550_000,
+      currency: "UZS",
+      badgeNew: true,
+    },
+    create: {
+      slug: "gold-elegance",
+      name: "Gold Elegance",
+      category: "classic",
+      thumbnail: "/templates/gold-elegance/assets/wedding-hero.jpg",
+      previewImages: [
+        "/templates/gold-elegance/assets/wedding-hero.jpg",
+        "/templates/gold-elegance/assets/hands.png",
+      ],
+      componentKey: "gold-elegance",
+      fieldsSchema: GOLD_ELEGANCE_FIELDS_SCHEMA as object,
+      themeDefaults: GOLD_ELEGANCE_THEME as object,
+      priceAmount: 550_000,
+      currency: "UZS",
+      isPublished: true,
+      badgeNew: true,
+    },
+  });
 
   await prisma.template.upsert({
     where: { slug: "uzb-style" },

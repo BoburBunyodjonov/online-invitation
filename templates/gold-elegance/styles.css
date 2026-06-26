@@ -1,0 +1,550 @@
+.gold-elegance-root {
+  --ge-gold: #c9a227;
+  --ge-gold-light: #e0c878;
+  --ge-gold-dark: #9a7b1a;
+  --ge-bg: #fafafa;
+  --ge-card: #f5f5f5;
+  --ge-text: #333333;
+  --ge-muted: #737373;
+  --ge-border: rgba(201, 162, 39, 0.25);
+  --ge-font-display: var(--font-serif, "Playfair Display", Georgia, serif);
+  --ge-font-script: var(--font-script, "Great Vibes", cursive);
+  --ge-font-body: var(--font-sans, system-ui, sans-serif);
+
+  min-height: 100vh;
+  background: var(--ge-bg);
+  color: var(--ge-text);
+  font-family: var(--ge-font-body);
+  overflow-x: hidden;
+}
+
+.gold-elegance-root *,
+.gold-elegance-root *::before,
+.gold-elegance-root *::after {
+  box-sizing: border-box;
+}
+
+.gold-elegance-root .gold-text {
+  color: var(--ge-gold);
+}
+
+.gold-elegance-root .gold-gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--ge-gold-dark),
+    var(--ge-gold),
+    var(--ge-gold-light)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gold-elegance-root .wedding-section {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 1.5rem;
+  text-align: center;
+}
+
+.gold-elegance-root .section-inner {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.gold-elegance-root .ge-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 2rem 0;
+}
+
+.gold-elegance-root .ge-divider::before,
+.gold-elegance-root .ge-divider::after {
+  content: "";
+  width: 4rem;
+  height: 1px;
+  background: var(--ge-border);
+}
+
+.gold-elegance-root .ge-divider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(201, 162, 39, 0.45);
+}
+
+/* Hero */
+.gold-elegance-root .ge-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.gold-elegance-root .ge-hero-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.gold-elegance-root .ge-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.gold-elegance-root .ge-hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.gold-elegance-root .ge-hero-names {
+  margin: 1.5rem 0;
+}
+
+.gold-elegance-root .ge-hero-name {
+  font-family: var(--ge-font-display);
+  font-size: clamp(2.75rem, 10vw, 5rem);
+  font-weight: 300;
+  line-height: 1;
+  margin: 0;
+}
+
+.gold-elegance-root .ge-hero-name--left {
+  text-align: left;
+}
+
+.gold-elegance-root .ge-hero-name--right {
+  text-align: right;
+}
+
+.gold-elegance-root .ge-hero-amp {
+  display: block;
+  font-family: var(--ge-font-display);
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-style: italic;
+  color: var(--ge-gold);
+  margin: 0.25rem 0;
+}
+
+.gold-elegance-root .ge-hero-hands {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: 1rem;
+}
+
+.gold-elegance-root .ge-hero-hands img {
+  width: 100%;
+  height: auto;
+}
+
+.gold-elegance-root .ge-hero-subtitle {
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  color: var(--ge-muted);
+  margin-top: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .gold-elegance-root .ge-hero-name,
+  .gold-elegance-root .ge-hero-name--left,
+  .gold-elegance-root .ge-hero-name--right {
+    text-align: center;
+  }
+
+  .gold-elegance-root .ge-hero-hands {
+    display: none;
+  }
+}
+
+/* Invitation block */
+.gold-elegance-root .ge-greeting {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5em;
+  color: var(--ge-muted);
+  margin-bottom: 2.5rem;
+}
+
+.gold-elegance-root .ge-intro {
+  font-size: 0.95rem;
+  color: var(--ge-muted);
+  line-height: 1.8;
+  letter-spacing: 0.04em;
+  max-width: 22rem;
+  margin: 0 auto 2.5rem;
+}
+
+.gold-elegance-root .ge-hosts-title {
+  font-family: var(--ge-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 300;
+  color: var(--ge-gold);
+  margin: 0 0 1.5rem;
+}
+
+.gold-elegance-root .ge-hosts-names {
+  font-family: var(--ge-font-display);
+  font-size: clamp(1.5rem, 3.5vw, 1.875rem);
+  font-weight: 300;
+  margin: 0;
+}
+
+/* Countdown */
+.gold-elegance-root .ge-countdown-title {
+  font-family: var(--ge-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 300;
+  color: var(--ge-gold);
+  margin: 0 0 1.5rem;
+}
+
+.gold-elegance-root .ge-countdown-grid {
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.gold-elegance-root .ge-countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gold-elegance-root .ge-countdown-number {
+  font-family: var(--ge-font-display);
+  font-size: clamp(2.5rem, 8vw, 3.75rem);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ge-gold);
+}
+
+.gold-elegance-root .ge-countdown-label {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--ge-muted);
+}
+
+/* Calendar */
+.gold-elegance-root .ge-calendar-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.gold-elegance-root .ge-calendar {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--ge-border);
+}
+
+.gold-elegance-root .ge-calendar-head {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.gold-elegance-root .ge-calendar-month {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ge-gold);
+  margin: 0;
+}
+
+.gold-elegance-root .ge-calendar-sub {
+  font-size: 0.875rem;
+  color: var(--ge-muted);
+  margin: 0.25rem 0 0;
+}
+
+.gold-elegance-root .ge-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 2.5rem);
+  gap: 0.5rem;
+}
+
+.gold-elegance-root .ge-calendar-weekday {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ge-muted);
+}
+
+.gold-elegance-root .ge-calendar-day {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  border-radius: 0.35rem;
+  color: var(--ge-text);
+}
+
+.gold-elegance-root .ge-calendar-day--muted {
+  color: rgba(115, 115, 115, 0.45);
+}
+
+.gold-elegance-root .ge-calendar-day--wedding {
+  position: relative;
+}
+
+.gold-elegance-root .ge-heart-cell {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gold-elegance-root .ge-heart-icon {
+  position: absolute;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: rgba(201, 162, 39, 0.55);
+  fill: currentColor;
+}
+
+.gold-elegance-root .ge-heart-day {
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ge-gold);
+}
+
+/* Event details */
+.gold-elegance-root .ge-event-section {
+  background: var(--ge-card);
+}
+
+.gold-elegance-root .ge-event-title {
+  font-family: var(--ge-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 300;
+  color: var(--ge-gold);
+  margin: 0 0 2.5rem;
+}
+
+.gold-elegance-root .ge-event-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.gold-elegance-root .ge-event-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--ge-gold);
+}
+
+.gold-elegance-root .ge-event-date {
+  font-family: var(--ge-font-display);
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin: 0;
+}
+
+.gold-elegance-root .ge-schedule-item {
+  font-size: 1.125rem;
+  font-weight: 300;
+  margin: 0.25rem 0;
+}
+
+.gold-elegance-root .ge-schedule-label {
+  font-size: 0.8rem;
+  color: var(--ge-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-left: 0.35rem;
+}
+
+.gold-elegance-root .ge-venue-name {
+  font-family: var(--ge-font-display);
+  font-size: 1.25rem;
+  font-weight: 300;
+  margin: 0;
+}
+
+.gold-elegance-root .ge-venue-address {
+  font-size: 0.875rem;
+  color: var(--ge-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.gold-elegance-root .ge-map-link {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 2rem;
+  border: 1px solid rgba(201, 162, 39, 0.45);
+  color: var(--ge-gold);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.gold-elegance-root .ge-map-link:hover {
+  background: rgba(201, 162, 39, 0.1);
+}
+
+/* RSVP teaser */
+.gold-elegance-root .ge-rsvp-title {
+  font-family: var(--ge-font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 300;
+  color: var(--ge-gold);
+  margin: 0 0 1rem;
+}
+
+.gold-elegance-root .ge-rsvp-subtitle {
+  font-size: 0.875rem;
+  color: var(--ge-muted);
+  line-height: 1.7;
+  max-width: 22rem;
+  margin: 0 auto 2rem;
+}
+
+.gold-elegance-root .ge-rsvp-btn {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background: rgba(201, 162, 39, 0.85);
+  color: var(--ge-bg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.gold-elegance-root .ge-rsvp-btn:hover {
+  background: var(--ge-gold);
+}
+
+/* Footer */
+.gold-elegance-root .ge-footer-names {
+  font-family: var(--ge-font-display);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 300;
+  padding: 2.5rem 0;
+}
+
+.gold-elegance-root .ge-footer-love {
+  font-size: 1rem;
+  color: var(--ge-muted);
+  margin-top: 0.5rem;
+}
+
+.gold-elegance-root .ge-footer-heart {
+  color: var(--ge-gold);
+}
+
+/* Controls */
+.gold-elegance-root .ge-language-switcher {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 50;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.gold-elegance-root .ge-language-option {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--ge-border);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ge-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gold-elegance-root .ge-language-option.is-active {
+  background: var(--ge-gold);
+  color: #fff;
+  border-color: var(--ge-gold);
+}
+
+.gold-elegance-root .ge-music-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--ge-border);
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.gold-elegance-root .ge-music-toggle.is-playing {
+  animation: ge-music-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ge-music-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Reveal animations */
+.gold-elegance-root .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+.gold-elegance-root .reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gold-elegance-root .invite-credit {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--ge-muted);
+}
+
+.gold-elegance-root .invite-credit-link {
+  color: var(--ge-gold);
+  text-decoration: none;
+}

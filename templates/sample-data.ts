@@ -184,6 +184,23 @@ export const BLUE_ENVELOPE_FIELDS_SCHEMA: FieldsSchema = {
   rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
 };
 
+/** Gold elegance — hero, hosts, countdown, calendar, schedule, venue. */
+export const GOLD_ELEGANCE_FIELDS_SCHEMA: FieldsSchema = {
+  groomName: DEFAULT_FIELDS_SCHEMA.groomName,
+  brideName: DEFAULT_FIELDS_SCHEMA.brideName,
+  weddingDate: DEFAULT_FIELDS_SCHEMA.weddingDate,
+  startTime: DEFAULT_FIELDS_SCHEMA.startTime,
+  heroPhoto: DEFAULT_FIELDS_SCHEMA.heroPhoto,
+  intro: DEFAULT_FIELDS_SCHEMA.intro,
+  greeting: DEFAULT_FIELDS_SCHEMA.greeting,
+  verse: DEFAULT_FIELDS_SCHEMA.verse,
+  schedule: DEFAULT_FIELDS_SCHEMA.schedule,
+  venue: DEFAULT_FIELDS_SCHEMA.venue,
+  backgroundMusic: DEFAULT_FIELDS_SCHEMA.backgroundMusic,
+  unlockGate: DEFAULT_FIELDS_SCHEMA.unlockGate,
+  rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
+};
+
 /** Uzbek heritage style — envelope, heritage hero, calendar, venue, countdown. */
 export const UZB_STYLE_FIELDS_SCHEMA: FieldsSchema = {
   groomName: DEFAULT_FIELDS_SCHEMA.groomName,
@@ -203,6 +220,7 @@ export const FIELDS_SCHEMA_BY_COMPONENT: Record<string, FieldsSchema> = {
   "islamic-elegant": STANDARD_FIELDS_SCHEMA,
   "blue-envelope": BLUE_ENVELOPE_FIELDS_SCHEMA,
   "uzb-style": UZB_STYLE_FIELDS_SCHEMA,
+  "gold-elegance": GOLD_ELEGANCE_FIELDS_SCHEMA,
 };
 
 export const BEACH_THEME: ThemeDefaults = {
@@ -353,11 +371,109 @@ export const UZB_STYLE_THEME: ThemeDefaults = {
   mode: "light",
 };
 
+/** Sample data inspired by the Berdibek & Sabina gold wedding design. */
+export const GOLD_ELEGANCE_SAMPLE: InvitationData = {
+  locales: ["ru", "uz", "uz-Cyrl"],
+  defaultLocale: "ru",
+  groomName: {
+    ru: "Бердібек",
+    uz: "Berdibek",
+    "uz-Cyrl": "Бердібек",
+    en: "Berdibek",
+  },
+  brideName: {
+    ru: "Сабина",
+    uz: "Sabina",
+    "uz-Cyrl": "Сабина",
+    en: "Sabina",
+  },
+  weddingDate: "2026-06-12",
+  startTime: "15:00",
+  heroPhoto: "/templates/gold-elegance/assets/wedding-hero.jpg",
+  greeting: {
+    ru: "Құрметті қонақтар!",
+    uz: "Hurmatli mehmonlar!",
+    "uz-Cyrl": "Құрметті қонақтар!",
+    en: "Dear guests!",
+  },
+  intro: {
+    ru: "Балаларымыздың үйлену тойына арналған салтанатты ақ дастарханымыздың қадірлі қонағы болуға шақырамыз!",
+    uz: "Farzandlarimizning to'yiga bag'ishlangan tantanali dasturxonga qadrli mehmon bo'lishingizni taklif qilamiz!",
+    "uz-Cyrl":
+      "Балаларымыздың үйлену тойына арналған салтанатты ақ дастарханымыздың қадірлі қонағы болуға шақырамыз!",
+    en: "We invite you to be honored guests at the festive table for our children's wedding!",
+  },
+  verse: {
+    translation: {
+      ru: "Бақытбек & Айша",
+      uz: "Baxytbek va Aysha",
+      "uz-Cyrl": "Бақытбек & Айша",
+      en: "Bakytbek & Aisha",
+    },
+    source: {
+      ru: "Той иелері",
+      uz: "To'y egalari",
+      "uz-Cyrl": "Той иелері",
+      en: "Wedding hosts",
+    },
+  },
+  schedule: [
+    {
+      time: "15:00",
+      icon: "rings",
+      label: {
+        ru: "Беташар",
+        uz: "Betashar",
+        "uz-Cyrl": "Беташар",
+        en: "Betashar",
+      },
+    },
+    {
+      time: "17:00",
+      icon: "dinner",
+      label: {
+        ru: "Той",
+        uz: "To'y",
+        "uz-Cyrl": "Той",
+        en: "Wedding",
+      },
+    },
+  ],
+  venue: {
+    name: {
+      ru: "Grand Hall мейрамханасы",
+      uz: "Grand Hall restorani",
+      "uz-Cyrl": "Grand Hall мейрамханасы",
+      en: "Grand Hall Restaurant",
+    },
+    address: {
+      ru: "Теміртау қаласы\nПроспект Металлургов, 65/1",
+      uz: "Temirtau shahri\nMetallurgov prospekti, 65/1",
+      "uz-Cyrl": "Теміртау қаласы\nПроспект Металлургов, 65/1",
+      en: "Temirtau\n65/1 Metallurgov Ave.",
+    },
+    lat: 50.038853,
+    lng: 72.964122,
+  },
+  gallery: [],
+  backgroundMusic: "/templates/gold-elegance/assets/music.mp3",
+  unlockGate: false,
+  rsvpEnabled: true,
+};
+
+export const GOLD_ELEGANCE_THEME: ThemeDefaults = {
+  backgroundColor: "#fafafa",
+  accentColor: "#c9a227",
+  fontPair: "playfair-vibes",
+  mode: "light",
+};
+
 export const SAMPLE_DATA_BY_COMPONENT: Record<string, InvitationData> = {
   "beach-romantic": SAMPLE_DATA,
   "islamic-elegant": SAMPLE_DATA,
   "blue-envelope": BLUE_ENVELOPE_SAMPLE,
   "uzb-style": UZB_STYLE_SAMPLE,
+  "gold-elegance": GOLD_ELEGANCE_SAMPLE,
 };
 
 export const THEME_BY_COMPONENT: Record<string, ThemeDefaults> = {
@@ -365,6 +481,7 @@ export const THEME_BY_COMPONENT: Record<string, ThemeDefaults> = {
   "islamic-elegant": ISLAMIC_THEME,
   "blue-envelope": BLUE_ENVELOPE_THEME,
   "uzb-style": UZB_STYLE_THEME,
+  "gold-elegance": GOLD_ELEGANCE_THEME,
 };
 
 export const THEME_PRESETS: Record<string, ThemeDefaults> = {
@@ -372,6 +489,7 @@ export const THEME_PRESETS: Record<string, ThemeDefaults> = {
   islamic: ISLAMIC_THEME,
   "blue-envelope": BLUE_ENVELOPE_THEME,
   "uzb-style": UZB_STYLE_THEME,
+  "gold-elegance": GOLD_ELEGANCE_THEME,
 };
 
 export function getFieldsSchemaForComponent(componentKey: string): FieldsSchema {
