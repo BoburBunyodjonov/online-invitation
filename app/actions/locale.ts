@@ -14,4 +14,5 @@ export async function setLocale(locale: string) {
     maxAge: 60 * 60 * 24 * 365,
   });
   revalidatePath("/", "layout");
+  revalidatePath("/admin", "layout");
 }

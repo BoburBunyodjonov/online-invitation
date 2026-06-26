@@ -12,34 +12,19 @@ import {
   Typography,
 } from "@mui/material";
 import { CaretDownIcon, CheckCircleIcon, CircleIcon } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 import { REGISTRY_KEYS } from "@/templates/registry";
 
-const STEPS = [
-  {
-    title: "Create the React component",
-    detail: "Add templates/<key>/index.tsx using blocks from templates/shared/.",
-  },
-  {
-    title: "Register in the registry",
-    detail: "Import the component in templates/registry.ts and add it to TEMPLATE_REGISTRY.",
-  },
-  {
-    title: "Add sample data (optional)",
-    detail:
-      "Extend templates/sample-data.ts with FIELDS_SCHEMA_BY_COMPONENT, THEME_BY_COMPONENT, and SAMPLE_DATA_BY_COMPONENT entries.",
-  },
-  {
-    title: "Create the DB template here",
-    detail:
-      "Pick the component key, set theme + editable fields, upload thumbnail and preview images, then publish.",
-  },
-  {
-    title: "Verify preview",
-    detail: "Open /templates/<slug>/preview and create a test order from the admin panel.",
-  },
+const STEP_KEYS = [
+  { title: "checklistStep1Title", detail: "checklistStep1Detail" },
+  { title: "checklistStep2Title", detail: "checklistStep2Detail" },
+  { title: "checklistStep3Title", detail: "checklistStep3Detail" },
+  { title: "checklistStep4Title", detail: "checklistStep4Detail" },
+  { title: "checklistStep5Title", detail: "checklistStep5Detail" },
 ] as const;
 
 export function NewTemplateChecklist({ componentKey }: { componentKey?: string }) {
+  const t = useTranslations("admin");
   const isRegistered = componentKey
     ? REGISTRY_KEYS.includes(componentKey as (typeof REGISTRY_KEYS)[number])
     : false;
@@ -58,11 +43,11 @@ export function NewTemplateChecklist({ componentKey }: { componentKey?: string }
       }}
     >
       <AccordionSummary expandIcon={<CaretDownIcon size={18} />}>
-        <Typography variant="subtitle2">New template checklist</Typography>
+        <Typography variant="subtitle2">{t("checklistTitle")}</Typography>
       </AccordionSummary>
       <AccordionDetails sx={{ pt: 0 }}>
         <List dense disablePadding>
-          {STEPS.map((step, index) => {
+          {STEP_KEYS.map((step, index) => {
             const done =
               index === 1
                 ? isRegistered
@@ -80,8 +65,8 @@ export function NewTemplateChecklist({ componentKey }: { componentKey?: string }
                   )}
                 </ListItemIcon>
                 <ListItemText
-                  primary={step.title}
-                  secondary={step.detail}
+                  primary={t(step.title)}
+                  secondary={t(step.detail)}
                   slotProps={{
                     primary: { variant: "body2", sx: { fontWeight: 600 } },
                     secondary: { variant: "caption" },
@@ -92,13 +77,13 @@ export function NewTemplateChecklist({ componentKey }: { componentKey?: string }
           })}
         </List>
         <Typography variant="caption" color="text.secondary">
-          Full guide:{" "}
+          {t("checklistGuide")}{" "}
           <Link
             href="https://github.com/BoburBunyodjonov/online-invitation#adding-a-template"
             target="_blank"
             rel="noopener noreferrer"
           >
-            README → Adding a template
+            {t("checklistGuideLink")}
           </Link>
         </Typography>
       </AccordionDetails>

@@ -120,7 +120,7 @@ export default function OrdersPage() {
       renderCell: (params) => (
         <Chip
           size="small"
-          label={params.value as string}
+          label={t(`status_${params.value as string}` as Parameters<typeof t>[0])}
           color={STATUS_COLORS[params.value as string] ?? "default"}
         />
       ),
@@ -201,7 +201,7 @@ export default function OrdersPage() {
         {ORDER_STATUSES.map((s) => (
           <Chip
             key={s}
-            label={s}
+            label={t(`status_${s}` as Parameters<typeof t>[0])}
             variant={status === s ? "filled" : "outlined"}
             color={status === s ? "primary" : "default"}
             onClick={() => setStatus(s)}

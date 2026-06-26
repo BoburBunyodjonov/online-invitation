@@ -13,6 +13,7 @@ export function FileUploadField({
   preview = true,
   error,
   helperText,
+  uploadLabel,
   onChange,
 }: {
   label: string;
@@ -21,6 +22,7 @@ export function FileUploadField({
   preview?: boolean;
   error?: string;
   helperText?: string;
+  uploadLabel?: string;
   onChange: (url: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +58,7 @@ export function FileUploadField({
             )
           }
         >
-          Upload
+          {uploadLabel ?? "Upload"}
         </Button>
         <input
           ref={inputRef}

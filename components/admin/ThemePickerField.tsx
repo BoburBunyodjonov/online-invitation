@@ -13,16 +13,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import type { ThemeDefaults } from "@/lib/validation/template";
 import { FONT_PAIR_KEYS } from "@/templates/shared/font-pairs";
 import { THEME_PRESETS } from "@/templates/sample-data";
-
-const PRESET_LABELS: Record<string, string> = {
-  beach: "Beach",
-  islamic: "Islamic",
-  "blue-envelope": "Blue envelope",
-  "uzb-style": "Uzbek heritage",
-};
 
 export function ThemePickerField({
   value,
@@ -31,6 +25,13 @@ export function ThemePickerField({
   value: ThemeDefaults;
   onChange: (theme: ThemeDefaults) => void;
 }) {
+  const t = useTranslations("admin");
+
+  const presetLabel = (key: string) => {
+    const msgKey = `themePreset_${key}` as Parameters<typeof t>[0];
+    return t.has(msgKey) ? t(msgKey) : key;
+  };
+
   const update = (patch: Partial<ThemeDefaults>) => {
     onChange({ ...value, ...patch });
   };
@@ -38,14 +39,14 @@ export function ThemePickerField({
   return (
     <Stack spacing={2}>
       <Typography variant="subtitle2" color="text.secondary">
-        Theme
+        {t("themeTitle")}
       </Typography>
 
       <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", gap: 1 }}>
         {Object.entries(THEME_PRESETS).map(([key, preset]) => (
           <Chip
             key={key}
-            label={PRESET_LABELS[key] ?? key}
+            label={presetLabel(key)}
             size="small"
             variant={
               value.backgroundColor === preset.backgroundColor &&
@@ -91,7 +92,7 @@ export function ThemePickerField({
             }}
           />
           <TextField
-            label="Background"
+            label={t("themeBackground")}
             value={value.backgroundColor}
             onChange={(e) => update({ backgroundColor: e.target.value })}
             size="small"
@@ -114,7 +115,7 @@ export function ThemePickerField({
             }}
           />
           <TextField
-            label="Accent"
+            label={t("themeAccent")}
             value={value.accentColor}
             onChange={(e) => update({ accentColor: e.target.value })}
             size="small"
@@ -125,9 +126,9 @@ export function ThemePickerField({
 
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <FormControl size="small" fullWidth>
-          <InputLabel>Font pair</InputLabel>
+          <InputLabel>{t("themeFontPair")}</InputLabel>
           <Select
-            label="Font pair"
+            label={t("themeFontPair")}
             value={value.fontPair}
             onChange={(e) => update({ fontPair: e.target.value })}
           >
@@ -145,7 +146,7 @@ export function ThemePickerField({
               onChange={(e) => update({ mode: e.target.checked ? "dark" : "light" })}
             />
           }
-          label={value.mode === "dark" ? "Dark mode" : "Light mode"}
+          label={value.mode === "dark" ? t("themeDarkMode") : t("themeLightMode")}
           sx={{ ml: 0, minWidth: 140 }}
         />
       </Stack>

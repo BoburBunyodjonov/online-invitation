@@ -17,6 +17,7 @@ import {
 import { HeartIcon } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
 import { loginAdmin } from "@/app/actions/auth";
+import { AdminLocaleSwitcher } from "@/components/admin/AdminLocaleSwitcher";
 
 const schema = z.object({
   email: z.string().email(),
@@ -70,8 +71,12 @@ export default function AdminLoginForm() {
           border: "1px solid",
           borderColor: "divider",
           boxShadow: "var(--shadow-card)",
+          position: "relative",
         }}
       >
+        <Box sx={{ position: "absolute", top: 16, right: 16 }}>
+          <AdminLocaleSwitcher />
+        </Box>
         <Stack spacing={1} sx={{ alignItems: "center", mb: 3 }}>
           <HeartIcon weight="fill" size={36} color="var(--color-brand)" />
           <Typography variant="h5">{t("login")}</Typography>

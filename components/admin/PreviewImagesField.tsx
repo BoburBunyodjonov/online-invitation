@@ -17,6 +17,7 @@ import {
   TrashIcon,
   UploadSimpleIcon,
 } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 import { useUpload } from "@/lib/queries/useUpload";
 
 export function PreviewImagesField({
@@ -26,6 +27,7 @@ export function PreviewImagesField({
   value: string[];
   onChange: (urls: string[]) => void;
 }) {
+  const t = useTranslations("admin");
   const inputRef = useRef<HTMLInputElement>(null);
   const upload = useUpload();
 
@@ -59,7 +61,7 @@ export function PreviewImagesField({
         sx={{ alignItems: "center", justifyContent: "space-between" }}
       >
         <Typography variant="subtitle2" color="text.secondary">
-          Preview images
+          {t("previewImagesTitle")}
         </Typography>
         <Button
           size="small"
@@ -74,7 +76,7 @@ export function PreviewImagesField({
           onClick={() => inputRef.current?.click()}
           disabled={upload.isPending}
         >
-          Upload image
+          {t("previewImagesUpload")}
         </Button>
         <input
           ref={inputRef}
@@ -86,8 +88,7 @@ export function PreviewImagesField({
       </Stack>
 
       <Typography variant="caption" color="text.secondary">
-        Shown on the landing gallery card. First image is used when thumbnail is
-        missing.
+        {t("previewImagesHint")}
       </Typography>
 
       {value.length === 0 ? (
@@ -102,7 +103,7 @@ export function PreviewImagesField({
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            No preview images yet
+            {t("previewImagesEmpty")}
           </Typography>
         </Box>
       ) : (
@@ -151,7 +152,7 @@ export function PreviewImagesField({
                 size="small"
                 disabled={index === 0}
                 onClick={() => move(index, -1)}
-                aria-label="Move up"
+                aria-label={t("previewImagesMoveUp")}
               >
                 <ArrowUpIcon size={16} />
               </IconButton>
@@ -159,7 +160,7 @@ export function PreviewImagesField({
                 size="small"
                 disabled={index === value.length - 1}
                 onClick={() => move(index, 1)}
-                aria-label="Move down"
+                aria-label={t("previewImagesMoveDown")}
               >
                 <ArrowDownIcon size={16} />
               </IconButton>
@@ -167,7 +168,7 @@ export function PreviewImagesField({
                 size="small"
                 color="error"
                 onClick={() => removeAt(index)}
-                aria-label="Remove"
+                aria-label={t("previewImagesRemove")}
               >
                 <TrashIcon size={16} />
               </IconButton>
@@ -181,12 +182,12 @@ export function PreviewImagesField({
         variant="text"
         startIcon={<PlusIcon weight="bold" />}
         onClick={() => {
-          const url = window.prompt("Image URL");
+          const url = window.prompt(t("previewImagesPromptUrl"));
           if (url) addUrl(url);
         }}
         sx={{ alignSelf: "flex-start" }}
       >
-        Add URL manually
+        {t("previewImagesAddUrl")}
       </Button>
     </Stack>
   );

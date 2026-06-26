@@ -30,6 +30,7 @@ import {
   ChartBarIcon,
 } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
+import { AdminLocaleSwitcher } from "@/components/admin/AdminLocaleSwitcher";
 
 const DRAWER_WIDTH = 260;
 
@@ -139,6 +140,7 @@ export function AdminShell({
             {t("title")}
           </Typography>
           <Box sx={{ flex: 1 }} />
+          <AdminLocaleSwitcher />
           <Button
             variant="text"
             startIcon={<SignOutIcon weight="duotone" />}

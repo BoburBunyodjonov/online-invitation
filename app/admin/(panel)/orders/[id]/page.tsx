@@ -155,7 +155,7 @@ export default function OrderDetailPage({
           >
             {ORDER_STATUSES.map((s) => (
               <MenuItem key={s} value={s}>
-                {s}
+                {t(`status_${s}` as Parameters<typeof t>[0])}
               </MenuItem>
             ))}
           </TextField>

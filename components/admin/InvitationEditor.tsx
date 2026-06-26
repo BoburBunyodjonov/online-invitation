@@ -60,7 +60,6 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
   const fieldsSchema = order.template!.fieldsSchema;
   const editLocales = data.locales?.length ? data.locales : LOCALES;
 
-  // Admin preview: skip the full-screen envelope gate and defer heavy re-renders.
   const previewData = useMemo(
     () => ({ ...data, defaultLocale: editLocale, unlockGate: false }),
     [data, editLocale],
@@ -71,7 +70,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
     const parsed = invitationDataSchema.safeParse(data);
     if (!parsed.success) {
       setToast({
-        msg: parsed.error.issues[0]?.message ?? "Validation failed",
+        msg: parsed.error.issues[0]?.message ?? t("validationFailed"),
         severity: "error",
       });
       return null;
@@ -99,7 +98,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
         setInvitationId(created.id);
         setSlug(created.slug);
       }
-      setToast({ msg: "Saved", severity: "success" });
+      setToast({ msg: t("toastSaved"), severity: "success" });
     } catch (e) {
       setToast({ msg: apiErrorMessage(e), severity: "error" });
     }
@@ -107,13 +106,13 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
 
   const handlePublish = async () => {
     if (!invitationId) {
-      setToast({ msg: "Save the invitation first", severity: "error" });
+      setToast({ msg: t("toastSaveFirst"), severity: "error" });
       return;
     }
     try {
       const published = await publishMut.mutateAsync(invitationId);
       setSlug(published.slug);
-      setToast({ msg: "Published! Customer notified.", severity: "success" });
+      setToast({ msg: t("toastPublished"), severity: "success" });
     } catch (e) {
       setToast({ msg: apiErrorMessage(e), severity: "error" });
     }
@@ -130,7 +129,6 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
         alignItems: "start",
       }}
     >
-      {/* FORM */}
       <Paper sx={{ p: { xs: 2, md: 3 } }}>
         <Stack
           direction="row"
@@ -138,11 +136,11 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
           sx={{ mb: 2, alignItems: "center", flexWrap: "wrap" }}
         >
           <TextField
-            label="Public slug"
+            label={t("publicSlug")}
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder="ulugbek-malika"
-            helperText="Leave empty to auto-generate"
+            helperText={t("publicSlugHint")}
           />
           <Box sx={{ flex: 1 }} />
           <Button
@@ -151,7 +149,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
             onClick={handleSave}
             disabled={saving}
           >
-            {invitationId ? "Save" : "Create"}
+            {invitationId ? t("save") : t("create")}
           </Button>
           <Button
             variant="contained"
@@ -160,7 +158,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
             onClick={handlePublish}
             disabled={publishMut.isPending || !invitationId}
           >
-            Publish
+            {t("publish")}
           </Button>
         </Stack>
 
@@ -174,7 +172,7 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
               size="small"
               startIcon={<EyeIcon weight="duotone" />}
             >
-              Open live page /i/{slug}
+              {t("openLivePage", { slug })}
             </Button>
             {existing?.isPublished && (
               <Typography variant="body2" color="text.secondary">
@@ -208,10 +206,9 @@ export function InvitationEditor({ order }: { order: OrderDTO }) {
         />
       </Paper>
 
-      {/* LIVE PREVIEW */}
       <Box sx={{ position: "sticky", top: 88 }}>
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Live preview ({LOCALE_LABELS[editLocale]})
+          {t("livePreview", { locale: LOCALE_LABELS[editLocale] })}
         </Typography>
         <Paper
           variant="outlined"

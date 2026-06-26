@@ -64,6 +64,7 @@ export function SchemaForm({
   onChange,
 }: SchemaFormProps) {
   const t = useTranslations("admin.fields");
+  const tu = useTranslations("admin");
   const sections = groupBySection(schema);
 
   const update = (path: Path, v: unknown) =>
@@ -201,6 +202,7 @@ export function SchemaForm({
             label={label}
             value={current as string}
             onChange={(url) => update(path, url)}
+            uploadLabel={tu("upload")}
           />
         );
 
@@ -213,6 +215,7 @@ export function SchemaForm({
             preview={false}
             value={current as string}
             onChange={(url) => update(path, url)}
+            uploadLabel={tu("upload")}
           />
         );
 
@@ -236,6 +239,7 @@ export function SchemaForm({
                       label={t("galleryItem", { index: i + 1 })}
                       value={url}
                       onChange={(u) => update([...path, i], u)}
+                      uploadLabel={tu("upload")}
                     />
                   </Box>
                   <IconButton

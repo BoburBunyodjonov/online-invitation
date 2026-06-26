@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CaretDownIcon } from "@phosphor-icons/react";
+import { useTranslations } from "next-intl";
 import {
   FIELD_SECTION_ORDER,
   type FieldSection,
@@ -21,17 +22,6 @@ import {
   fieldsSchemaSchema,
 } from "@/lib/validation/field-schema";
 import { DEFAULT_FIELDS_SCHEMA } from "@/templates/sample-data";
-
-const SECTION_LABELS: Record<FieldSection, string> = {
-  couple: "Couple",
-  event: "Event",
-  text: "Text",
-  verse: "Verse",
-  venue: "Venue",
-  schedule: "Schedule",
-  media: "Media",
-  settings: "Settings",
-};
 
 function fieldsBySection(): Record<FieldSection, string[]> {
   const grouped = Object.fromEntries(
@@ -54,9 +44,23 @@ export function FieldsSchemaEditor({
   value: FieldsSchema;
   onChange: (schema: FieldsSchema) => void;
 }) {
+  const t = useTranslations("admin");
+  const tf = useTranslations("admin.fields");
   const [advanced, setAdvanced] = useState(false);
   const [jsonText, setJsonText] = useState(() => JSON.stringify(value, null, 2));
   const [jsonError, setJsonError] = useState<string | null>(null);
+
+  const sectionLabel = (section: FieldSection) => {
+    const key = `section_${section}` as Parameters<typeof tf>[0];
+    return tf(key);
+  };
+
+  const fieldLabel = (key: string) => {
+    if (key in DEFAULT_FIELDS_SCHEMA) {
+      return tf(key as Parameters<typeof tf>[0]);
+    }
+    return DEFAULT_FIELDS_SCHEMA[key]?.label ?? key;
+  };
 
   useEffect(() => {
     if (!advanced) {
@@ -82,14 +86,16 @@ export function FieldsSchemaEditor({
       const parsed = JSON.parse(jsonText);
       const validated = fieldsSchemaSchema.safeParse(parsed);
       if (!validated.success) {
-        setJsonError(validated.error.issues[0]?.message ?? "Invalid schema");
+        setJsonError(
+          validated.error.issues[0]?.message ?? t("templateFormInvalidSchema"),
+        );
         return false;
       }
       setJsonError(null);
       onChange(validated.data);
       return true;
     } catch {
-      setJsonError("Must be valid JSON");
+      setJsonError(t("templateFormInvalidJson"));
       return false;
     }
   };
@@ -110,7 +116,7 @@ export function FieldsSchemaEditor({
               }}
             />
           }
-          label="Advanced JSON editor"
+          label={t("templateFormAdvancedJsonEditor")}
         />
         {jsonError && <Alert severity="error">{jsonError}</Alert>}
         <TextField
@@ -125,7 +131,7 @@ export function FieldsSchemaEditor({
           }}
         />
         <Typography variant="caption" color="text.secondary">
-          Changes apply on blur. Toggle off to return to the visual editor.
+          {t("templateFormJsonBlurHint")}
         </Typography>
       </Stack>
     );
@@ -138,7 +144,7 @@ export function FieldsSchemaEditor({
         sx={{ alignItems: "center", justifyContent: "space-between" }}
       >
         <Typography variant="subtitle2" color="text.secondary">
-          Editable fields
+          {t("templateFormEditableFields")}
         </Typography>
         <FormControlLabel
           control={
@@ -147,7 +153,7 @@ export function FieldsSchemaEditor({
               onChange={(e) => setAdvanced(e.target.checked)}
             />
           }
-          label="Advanced JSON"
+          label={t("templateFormAdvancedJson")}
           sx={{ mr: 0 }}
         />
       </Stack>
@@ -174,7 +180,7 @@ export function FieldsSchemaEditor({
             <AccordionSummary expandIcon={<CaretDownIcon size={18} />}>
               <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  {SECTION_LABELS[section]}
+                  {sectionLabel(section)}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   {enabledInSection}/{keys.length}
@@ -204,7 +210,7 @@ export function FieldsSchemaEditor({
                       label={
                         <Box>
                           <Typography variant="body2">
-                            {def?.label ?? key}
+                            {fieldLabel(key)}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             {key} · {def?.type}

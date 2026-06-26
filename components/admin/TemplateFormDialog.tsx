@@ -15,6 +15,7 @@ import {
   Alert,
   Divider,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { REGISTRY_KEYS } from "@/templates/registry";
 import {
   DEFAULT_FIELDS_SCHEMA,
@@ -47,6 +48,7 @@ export function TemplateFormDialog({
   template: TemplateDTO | null;
   onClose: () => void;
 }) {
+  const t = useTranslations("admin");
   const isEdit = Boolean(template);
   const initialKey = template?.componentKey ?? REGISTRY_KEYS[0];
   const initialCatalog = !template ? getCatalogDefaultsForComponent(initialKey) : undefined;
@@ -77,6 +79,21 @@ export function TemplateFormDialog({
   const [thumbnailTouched, setThumbnailTouched] = useState(Boolean(template?.thumbnail));
   const [error, setError] = useState<string | null>(null);
 
+  const zodOptions = {
+    fieldLabels: {
+      thumbnail: t("validation_thumbnail"),
+      slug: t("validation_slug"),
+      name: t("validation_name"),
+      category: t("validation_category"),
+      fieldsSchema: t("validation_fieldsSchema"),
+      themeDefaults: t("validation_themeDefaults"),
+      previewImages: t("validation_previewImages"),
+    },
+    invalidOrMissing: (field: string) =>
+      t("validation_invalidOrMissing", { field }),
+    fallback: t("validation_failed"),
+  };
+
   const applyComponentDefaults = (key: string, resetMedia: boolean) => {
     setFieldsSchema(getFieldsSchemaForComponent(key));
     setThemeDefaults(getThemeForComponent(key));
@@ -99,13 +116,13 @@ export function TemplateFormDialog({
 
     const parsedFields = fieldsSchemaSchema.safeParse(fieldsSchema);
     if (!parsedFields.success) {
-      setError(formatZodError(parsedFields.error));
+      setError(formatZodError(parsedFields.error, zodOptions));
       return;
     }
 
     const parsedTheme = themeDefaultsSchema.safeParse(themeDefaults);
     if (!parsedTheme.success) {
-      setError(formatZodError(parsedTheme.error));
+      setError(formatZodError(parsedTheme.error, zodOptions));
       return;
     }
 
@@ -127,7 +144,7 @@ export function TemplateFormDialog({
 
     if (!parsed.success) {
       setThumbnailTouched(true);
-      setError(formatZodError(parsed.error));
+      setError(formatZodError(parsed.error, zodOptions));
       return;
     }
 
@@ -139,13 +156,18 @@ export function TemplateFormDialog({
       }
       onClose();
     } catch (e) {
-      setError(apiErrorMessage(e));
+      const msg = apiErrorMessage(e);
+      setError(
+        msg === "A template with this slug already exists"
+          ? t("templateFormSlugExists")
+          : msg,
+      );
     }
   };
 
   return (
     <Dialog open onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEdit ? "Edit template" : "New template"}</DialogTitle>
+      <DialogTitle>{isEdit ? t("templateFormEdit") : t("newTemplate")}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           {error && <Alert severity="error">{error}</Alert>}
@@ -153,28 +175,28 @@ export function TemplateFormDialog({
 
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
-              label="Name"
+              label={t("templateFormName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               fullWidth
             />
             <TextField
-              label="Slug"
+              label={t("templateFormSlug")}
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               fullWidth
-              helperText="lowercase-with-dashes"
+              helperText={t("templateFormSlugHint")}
             />
           </Stack>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
-              label="Category"
+              label={t("templateFormCategory")}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               fullWidth
             />
             <TextField
-              label="Component"
+              label={t("templateFormComponent")}
               select
               value={componentKey}
               onChange={(e) => {
@@ -196,16 +218,16 @@ export function TemplateFormDialog({
 
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <TextField
-              label="Price"
+              label={t("templateFormPrice")}
               type="number"
               value={priceAmount}
               onChange={(e) => setPriceAmount(e.target.value)}
               fullWidth
               slotProps={{ htmlInput: { min: 0, step: 1 } }}
-              helperText="Major units: 350000 UZS, 49 USD, 175 EUR"
+              helperText={t("templateFormPriceHint")}
             />
             <TextField
-              label="Currency"
+              label={t("templateFormCurrency")}
               select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
@@ -220,14 +242,19 @@ export function TemplateFormDialog({
           </Stack>
 
           <FileUploadField
-            label="Thumbnail"
+            label={t("templateFormThumbnail")}
             value={thumbnail}
             onChange={(url) => {
               setThumbnail(url);
               setThumbnailTouched(true);
             }}
-            error={thumbnailTouched && !thumbnail.trim() ? "Thumbnail is required" : undefined}
-            helperText="Required — upload an image or use the default from the component"
+            error={
+              thumbnailTouched && !thumbnail.trim()
+                ? t("templateFormThumbnailRequired")
+                : undefined
+            }
+            helperText={t("templateFormThumbnailHint")}
+            uploadLabel={t("upload")}
           />
 
           <PreviewImagesField value={previewImages} onChange={setPreviewImages} />
@@ -247,7 +274,7 @@ export function TemplateFormDialog({
                 onChange={(e) => setIsPublished(e.target.checked)}
               />
             }
-            label="Published"
+            label={t("published")}
           />
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <FormControlLabel
@@ -257,7 +284,7 @@ export function TemplateFormDialog({
                   onChange={(e) => setBadgeNew(e.target.checked)}
                 />
               }
-              label="Badge: New"
+              label={t("templateFormBadgeNew")}
             />
             <FormControlLabel
               control={
@@ -266,15 +293,15 @@ export function TemplateFormDialog({
                   onChange={(e) => setBadgePopular(e.target.checked)}
                 />
               }
-              label="Badge: Popular"
+              label={t("templateFormBadgePopular")}
             />
           </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button variant="contained" onClick={handleSave} disabled={saving}>
-          {isEdit ? "Save" : "Create"}
+          {isEdit ? t("save") : t("create")}
         </Button>
       </DialogActions>
     </Dialog>
