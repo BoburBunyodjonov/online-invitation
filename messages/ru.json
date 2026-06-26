@@ -263,6 +263,7 @@
     "themePreset_blue-envelope": "Синий конверт",
     "themePreset_uzb-style": "Узбекский стиль",
     "themePreset_gold-elegance": "Золотая элегантность",
+    "themePreset_dark-blue-invitation": "Тёмно-синее приглашение",
     "checklistTitle": "Чеклист нового шаблона",
     "checklistStep1Title": "Создать React-компонент",
     "checklistStep1Detail": "Добавьте templates/<key>/index.tsx с блоками из templates/shared/.",

@@ -6,6 +6,7 @@ import IslamicElegantTemplate from "./islamic-elegant";
 import BlueEnvelopeTemplate from "./blue-envelope";
 import UzbStyleTemplate from "./uzb-style";
 import GoldEleganceTemplate from "./gold-elegance";
+import DarkBlueInvitationTemplate from "./dark-blue-invitation";
 
 export interface TemplateComponentProps {
   data: InvitationData;
@@ -26,6 +27,7 @@ export const TEMPLATE_REGISTRY: Record<
   "blue-envelope": BlueEnvelopeTemplate,
   "uzb-style": UzbStyleTemplate,
   "gold-elegance": GoldEleganceTemplate,
+  "dark-blue-invitation": DarkBlueInvitationTemplate,
 };
 
 export const REGISTRY_KEYS = Object.keys(TEMPLATE_REGISTRY);

@@ -263,6 +263,7 @@
     "themePreset_blue-envelope": "Blue envelope",
     "themePreset_uzb-style": "Uzbek heritage",
     "themePreset_gold-elegance": "Gold elegance",
+    "themePreset_dark-blue-invitation": "Dark blue invitation",
     "checklistTitle": "New template checklist",
     "checklistStep1Title": "Create the React component",
     "checklistStep1Detail": "Add templates/<key>/index.tsx using blocks from templates/shared/.",

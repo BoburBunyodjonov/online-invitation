@@ -263,6 +263,7 @@
     "themePreset_blue-envelope": "Кўк конверт",
     "themePreset_uzb-style": "Миллий услуб",
     "themePreset_gold-elegance": "Олтин нафислик",
+    "themePreset_dark-blue-invitation": "Тўқ кўк таклифнома",
     "checklistTitle": "Янги шаблон checklist",
     "checklistStep1Title": "React компонент яратиш",
     "checklistStep1Detail": "templates/<key>/index.tsx файлини templates/shared/ блоклари билан қўшинг.",

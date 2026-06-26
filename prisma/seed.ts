@@ -7,11 +7,13 @@ import {
   BLUE_ENVELOPE_FIELDS_SCHEMA,
   UZB_STYLE_FIELDS_SCHEMA,
   GOLD_ELEGANCE_FIELDS_SCHEMA,
+  DARK_BLUE_FIELDS_SCHEMA,
   BEACH_THEME,
   ISLAMIC_THEME,
   BLUE_ENVELOPE_THEME,
   UZB_STYLE_THEME,
   GOLD_ELEGANCE_THEME,
+  DARK_BLUE_THEME,
 } from "../templates/sample-data";
 import {
   DEFAULT_LANDING_TEXTS,
@@ -112,8 +114,6 @@ async function main() {
       badgeNew: true,
     },
   });
-  console.log("✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope, uzb-style, gold-elegance");
-
   await prisma.template.upsert({
     where: { slug: "gold-elegance" },
     update: {
@@ -137,6 +137,36 @@ async function main() {
       fieldsSchema: GOLD_ELEGANCE_FIELDS_SCHEMA as object,
       themeDefaults: GOLD_ELEGANCE_THEME as object,
       priceAmount: 550_000,
+      currency: "UZS",
+      isPublished: true,
+      badgeNew: true,
+    },
+  });
+
+  await prisma.template.upsert({
+    where: { slug: "dark-blue-invitation" },
+    update: {
+      componentKey: "dark-blue-invitation",
+      fieldsSchema: DARK_BLUE_FIELDS_SCHEMA as object,
+      isPublished: true,
+      priceAmount: 520_000,
+      currency: "UZS",
+      badgeNew: true,
+    },
+    create: {
+      slug: "dark-blue-invitation",
+      name: "Dark Blue Invitation",
+      category: "classic",
+      thumbnail:
+        "/templates/dark-blue-invitation/assets/fabric-navy-Dr3kDD5b.jpg",
+      previewImages: [
+        "/templates/dark-blue-invitation/assets/fabric-navy-Dr3kDD5b.jpg",
+        "/templates/dark-blue-invitation/assets/bow-ornament-D7kq-Hoz.png",
+      ],
+      componentKey: "dark-blue-invitation",
+      fieldsSchema: DARK_BLUE_FIELDS_SCHEMA as object,
+      themeDefaults: DARK_BLUE_THEME as object,
+      priceAmount: 520_000,
       currency: "UZS",
       isPublished: true,
       badgeNew: true,
@@ -171,6 +201,10 @@ async function main() {
       badgeNew: true,
     },
   });
+
+  console.log(
+    "✓ Templates seeded: beach-romantic, islamic-elegant, blue-envelope, gold-elegance, dark-blue-invitation, uzb-style",
+  );
 
   await prisma.siteSettings.upsert({
     where: { id: "default" },

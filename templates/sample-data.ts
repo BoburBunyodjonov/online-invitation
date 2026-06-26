@@ -201,6 +201,22 @@ export const GOLD_ELEGANCE_FIELDS_SCHEMA: FieldsSchema = {
   rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
 };
 
+/** Dark blue wedding invitation — ornate cards, palette, program, venue. */
+export const DARK_BLUE_FIELDS_SCHEMA: FieldsSchema = {
+  groomName: DEFAULT_FIELDS_SCHEMA.groomName,
+  brideName: DEFAULT_FIELDS_SCHEMA.brideName,
+  weddingDate: DEFAULT_FIELDS_SCHEMA.weddingDate,
+  startTime: DEFAULT_FIELDS_SCHEMA.startTime,
+  intro: DEFAULT_FIELDS_SCHEMA.intro,
+  greeting: DEFAULT_FIELDS_SCHEMA.greeting,
+  verse: DEFAULT_FIELDS_SCHEMA.verse,
+  schedule: DEFAULT_FIELDS_SCHEMA.schedule,
+  venue: DEFAULT_FIELDS_SCHEMA.venue,
+  backgroundMusic: DEFAULT_FIELDS_SCHEMA.backgroundMusic,
+  unlockGate: DEFAULT_FIELDS_SCHEMA.unlockGate,
+  rsvpEnabled: DEFAULT_FIELDS_SCHEMA.rsvpEnabled,
+};
+
 /** Uzbek heritage style — envelope, heritage hero, calendar, venue, countdown. */
 export const UZB_STYLE_FIELDS_SCHEMA: FieldsSchema = {
   groomName: DEFAULT_FIELDS_SCHEMA.groomName,
@@ -221,6 +237,7 @@ export const FIELDS_SCHEMA_BY_COMPONENT: Record<string, FieldsSchema> = {
   "blue-envelope": BLUE_ENVELOPE_FIELDS_SCHEMA,
   "uzb-style": UZB_STYLE_FIELDS_SCHEMA,
   "gold-elegance": GOLD_ELEGANCE_FIELDS_SCHEMA,
+  "dark-blue-invitation": DARK_BLUE_FIELDS_SCHEMA,
 };
 
 export const BEACH_THEME: ThemeDefaults = {
@@ -461,9 +478,121 @@ export const GOLD_ELEGANCE_SAMPLE: InvitationData = {
   rsvpEnabled: true,
 };
 
+/** Sample data for the dark-blue-invitation template. */
+export const DARK_BLUE_SAMPLE: InvitationData = {
+  locales: ["ru", "uz"],
+  defaultLocale: "uz",
+  groomName: {
+    ru: "Алишер",
+    uz: "Alisher",
+    "uz-Cyrl": "Алишер",
+    en: "Alisher",
+  },
+  brideName: {
+    ru: "Диана",
+    uz: "Diana",
+    "uz-Cyrl": "Диана",
+    en: "Diana",
+  },
+  weddingDate: "2026-09-20",
+  startTime: "16:00",
+  intro: {
+    ru: "Создай нам нашу неповторимую историю любви — день, в который мы скажем «да» друг другу — счастливо, искренне и навсегда.",
+    uz: "Bizga o'ziga xos sevgi hikoyamizni yarating — bir-birimizga «ha» degan baxtli, samimiy va abadiy kun.",
+    "uz-Cyrl":
+      "Создай нам нашу неповторимую историю любви — день, в который мы скажем «да» друг другу — счастливо, искренне и навсегда.",
+    en: "A day when we say yes to each other — happily, sincerely, and forever.",
+  },
+  greeting: {
+    ru: "С радостью приглашаем вас на наш самый важный день — свадьбу, которая состоится 20 сентября 2026 года. Мы будем счастливы разделить с вами этот трепетный момент.",
+    uz: "Eng muhim kunimiz — 2026-yil 20-sentabrda bo'lib o'tadigan to'yimizga sizni samimiy taklif etamiz. Bu hayajonli lahzani siz bilan baham ko'rishdan xursand bo'lamiz.",
+    "uz-Cyrl":
+      "С радостью приглашаем вас на наш самый важный день — свадьбу, которая состоится 20 сентября 2026 года. Мы будем счастливы разделить с вами этот трепетный момент.",
+    en: "We joyfully invite you to our wedding on September 20, 2026.",
+  },
+  verse: {
+    translation: {
+      ru: "Будем признательны, если вы поддержите нас и придёте, подобрав образ в одном из наших оттенков — пудровый, кремовый и индиго.",
+      uz: "Pudra, krem va indigo ranglaridan birida kelsangiz, minnatdor bo'lamiz.",
+      "uz-Cyrl":
+        "Будем признательны, если вы поддержите нас и придёте, подобрав образ в одном из наших оттенков — пудровый, кремовый и индиго.",
+      en: "We would appreciate outfits in powder, cream, or indigo tones.",
+    },
+  },
+  schedule: [
+    {
+      time: "12:00",
+      icon: "camera",
+      label: {
+        ru: "Фотосессия — Прогулка и кадры на память в саду",
+        uz: "Fotosessiya — Bog'da sayr va xotira uchun suratlar",
+        "uz-Cyrl": "Фотосессия — Прогулка и кадры на память в саду",
+        en: "Photo session — Garden walk and keepsake photos",
+      },
+    },
+    {
+      time: "15:00",
+      icon: "guests",
+      label: {
+        ru: "Сбор гостей — Приветственные напитки на летней террасе",
+        uz: "Mehmonlar yig'ilishi — Yozgi terrasada salomlashuv ichimliklari",
+        "uz-Cyrl": "Сбор гостей — Приветственные напитки на летней террасе",
+        en: "Guest arrival — Welcome drinks on the summer terrace",
+      },
+    },
+    {
+      time: "16:00",
+      icon: "rings",
+      label: {
+        ru: "Церемония — Самый трепетный момент нашего дня",
+        uz: "Marosim — Kunimizning eng hayajonli lahzasi",
+        "uz-Cyrl": "Церемония — Самый трепетный момент нашего дня",
+        en: "Ceremony — The most touching moment of our day",
+      },
+    },
+    {
+      time: "17:00",
+      icon: "dinner",
+      label: {
+        ru: "Банкет — Ужин, тосты и танцы до ночи",
+        uz: "Banket — Kechki ovqat, salomlar va kechki raqslar",
+        "uz-Cyrl": "Банкет — Ужин, тосты и танцы до ночи",
+        en: "Banquet — Dinner, toasts, and dancing into the night",
+      },
+    },
+  ],
+  venue: {
+    name: {
+      ru: "Летняя терраса «Сад»",
+      uz: "«Bog'» yozgi terrasa",
+      "uz-Cyrl": "Летняя терраса «Сад»",
+      en: "Garden Summer Terrace",
+    },
+    address: {
+      ru: "Ташкент\nОриентир: парк на берегу, вход со стороны главных ворот.",
+      uz: "Toshkent\nMo'ljal: daryo bo'yidagi bog', asosiy darvozadan kirish.",
+      "uz-Cyrl": "Ташкент\nОриентир: парк на берегу, вход со стороны главных ворот.",
+      en: "Tashkent\nLandmark: riverside park, main gate entrance.",
+    },
+    lat: 41.311081,
+    lng: 69.240562,
+  },
+  gallery: [],
+  backgroundMusic: "/templates/dark-blue-invitation/assets/music.mp3",
+  unlockGate: false,
+  rsvpEnabled: true,
+};
+
 export const GOLD_ELEGANCE_THEME: ThemeDefaults = {
   backgroundColor: "#fafafa",
   accentColor: "#c9a227",
+  fontPair: "playfair-vibes",
+  mode: "light",
+};
+
+export const DARK_BLUE_THEME: ThemeDefaults = {
+  backgroundColor: "#f5f0e8",
+  accentColor: "#1a2f4f",
   fontPair: "playfair-vibes",
   mode: "light",
 };
@@ -474,6 +603,7 @@ export const SAMPLE_DATA_BY_COMPONENT: Record<string, InvitationData> = {
   "blue-envelope": BLUE_ENVELOPE_SAMPLE,
   "uzb-style": UZB_STYLE_SAMPLE,
   "gold-elegance": GOLD_ELEGANCE_SAMPLE,
+  "dark-blue-invitation": DARK_BLUE_SAMPLE,
 };
 
 export const THEME_BY_COMPONENT: Record<string, ThemeDefaults> = {
@@ -482,6 +612,7 @@ export const THEME_BY_COMPONENT: Record<string, ThemeDefaults> = {
   "blue-envelope": BLUE_ENVELOPE_THEME,
   "uzb-style": UZB_STYLE_THEME,
   "gold-elegance": GOLD_ELEGANCE_THEME,
+  "dark-blue-invitation": DARK_BLUE_THEME,
 };
 
 export const THEME_PRESETS: Record<string, ThemeDefaults> = {
@@ -490,6 +621,7 @@ export const THEME_PRESETS: Record<string, ThemeDefaults> = {
   "blue-envelope": BLUE_ENVELOPE_THEME,
   "uzb-style": UZB_STYLE_THEME,
   "gold-elegance": GOLD_ELEGANCE_THEME,
+  "dark-blue-invitation": DARK_BLUE_THEME,
 };
 
 export function getFieldsSchemaForComponent(componentKey: string): FieldsSchema {
@@ -533,6 +665,13 @@ export const TEMPLATE_CATALOG_DEFAULTS: Record<
     previewImages: [
       "/templates/gold-elegance/assets/wedding-hero.jpg",
       "/templates/gold-elegance/assets/hands.png",
+    ],
+  },
+  "dark-blue-invitation": {
+    thumbnail: "/templates/dark-blue-invitation/assets/fabric-navy-Dr3kDD5b.jpg",
+    previewImages: [
+      "/templates/dark-blue-invitation/assets/fabric-navy-Dr3kDD5b.jpg",
+      "/templates/dark-blue-invitation/assets/bow-ornament-D7kq-Hoz.png",
     ],
   },
 };

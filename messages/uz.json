@@ -263,6 +263,7 @@
     "themePreset_blue-envelope": "Ko‘k konvert",
     "themePreset_uzb-style": "Milliy uslub",
     "themePreset_gold-elegance": "Oltin nafislik",
+    "themePreset_dark-blue-invitation": "To‘q ko‘k taklifnoma",
     "checklistTitle": "Yangi shablon checklist",
     "checklistStep1Title": "React komponent yaratish",
     "checklistStep1Detail": "templates/<key>/index.tsx faylini templates/shared/ bloklari bilan qo‘shing.",
