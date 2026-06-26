@@ -22,6 +22,7 @@ import {
   PencilSimpleIcon,
   TrashIcon,
   TicketIcon,
+  ImageIcon,
 } from "@phosphor-icons/react";
 import { useTranslations } from "next-intl";
 import {
@@ -32,6 +33,7 @@ import {
 import type { TemplateDTO } from "@/lib/types";
 import { formatTemplatePrice, type CurrencyCode } from "@/lib/format-price";
 import { TemplateFormDialog } from "@/components/admin/TemplateFormDialog";
+import { TemplateCoverDialog } from "@/components/admin/TemplateCoverDialog";
 import { CreateOrderDialog } from "@/components/admin/CreateOrderDialog";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 
@@ -41,6 +43,7 @@ export default function AdminTemplatesPage() {
   const deleteMut = useDeleteTemplate();
   const updateMut = useUpdateTemplate();
   const [editing, setEditing] = useState<TemplateDTO | null>(null);
+  const [coverEditing, setCoverEditing] = useState<TemplateDTO | null>(null);
   const [creating, setCreating] = useState(false);
   const [orderForTemplate, setOrderForTemplate] = useState<string | undefined>();
 
@@ -94,7 +97,13 @@ export default function AdminTemplatesPage() {
             gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", lg: "1fr 1fr 1fr" },
           }}
         >
-          {(data ?? []).map((tpl) => (
+          {(data ?? []).map((tpl) => {
+            const cover =
+              tpl.thumbnail ||
+              (tpl.previewImages?.[0] as string | undefined) ||
+              "";
+
+            return (
             <Card
               key={tpl.id}
               sx={{
@@ -110,11 +119,12 @@ export default function AdminTemplatesPage() {
                   aspectRatio: "16 / 10",
                   overflow: "hidden",
                   bgcolor: alpha("#b08968", 0.06),
+                  position: "relative",
                 }}
               >
-                {tpl.thumbnail && (
+                {cover ? (
                   <img
-                    src={tpl.thumbnail}
+                    src={cover}
                     alt={tpl.name}
                     style={{
                       width: "100%",
@@ -122,7 +132,34 @@ export default function AdminTemplatesPage() {
                       objectFit: "cover",
                     }}
                   />
+                ) : (
+                  <Box
+                    sx={{
+                      height: "100%",
+                      display: "grid",
+                      placeItems: "center",
+                      color: "text.secondary",
+                      typography: "body2",
+                    }}
+                  >
+                    {t("noCover")}
+                  </Box>
                 )}
+                <Button
+                  size="small"
+                  variant="contained"
+                  startIcon={<ImageIcon weight="duotone" />}
+                  onClick={() => setCoverEditing(tpl)}
+                  sx={{
+                    position: "absolute",
+                    bottom: 12,
+                    right: 12,
+                    borderRadius: 999,
+                    boxShadow: 2,
+                  }}
+                >
+                  {t("editCover")}
+                </Button>
               </Box>
               <CardContent>
                 <Typography
@@ -205,7 +242,8 @@ export default function AdminTemplatesPage() {
                 </Stack>
               </Stack>
             </Card>
-          ))}
+            );
+          })}
         </Box>
       )}
 
@@ -216,6 +254,13 @@ export default function AdminTemplatesPage() {
             setCreating(false);
             setEditing(null);
           }}
+        />
+      )}
+
+      {coverEditing && (
+        <TemplateCoverDialog
+          template={coverEditing}
+          onClose={() => setCoverEditing(null)}
         />
       )}
 

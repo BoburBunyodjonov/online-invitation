@@ -36,6 +36,7 @@ import { templateInputSchema, themeDefaultsSchema } from "@/lib/validation/templ
 import { formatZodError } from "@/lib/validation/format-zod-error";
 import { apiErrorMessage } from "@/lib/queries/axios";
 import { FileUploadField } from "./FileUploadField";
+import { TemplateCoverField } from "./TemplateCoverField";
 import { ThemePickerField } from "./ThemePickerField";
 import { FieldsSchemaEditor } from "./FieldsSchemaEditor";
 import { PreviewImagesField } from "./PreviewImagesField";
@@ -241,8 +242,9 @@ export function TemplateFormDialog({
             </TextField>
           </Stack>
 
-          <FileUploadField
-            label={t("templateFormThumbnail")}
+          <TemplateCoverField
+            templateName={name || t("templateFormName")}
+            previewHref={slug ? `/templates/${slug}/preview` : "#"}
             value={thumbnail}
             onChange={(url) => {
               setThumbnail(url);
@@ -253,8 +255,6 @@ export function TemplateFormDialog({
                 ? t("templateFormThumbnailRequired")
                 : undefined
             }
-            helperText={t("templateFormThumbnailHint")}
-            uploadLabel={t("upload")}
           />
 
           <PreviewImagesField value={previewImages} onChange={setPreviewImages} />
